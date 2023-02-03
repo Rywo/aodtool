@@ -5,7 +5,7 @@
         {{ type }}
       </h5>
       <h6 class="text-gray-900 font-bold">{{ subject }}</h6>
-      <img class="h-20 m-auto" :src="`src/assets/` + type + `.png`" />
+      <img class="h-20 m-auto" :src="`/assets/img` + type + `.png`" />
       <p class="text-gray-700 text-base mb-4">
         This building costs the following materials:
       </p>
