@@ -547,6 +547,9 @@ their eyes are only on the forests around them.`,
 </script>
 
 <style>
+body{
+  background-color: #242424;
+}
 .el-collapse-item__header {
   background-color: #151515 !important;
   border: none !important;
