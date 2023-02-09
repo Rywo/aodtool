@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.2.45"
+    "element-plus": "^2.2.29",
+    "vue": "^3.2.45",
+    "vue-sweetalert2": "^5.0.5"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.0",
