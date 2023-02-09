@@ -8,7 +8,7 @@
     :tiles="playerSettings.faction.tiles"
   />
 
-  <div class="absolute left-6 top-[450px]">
+  <div class="absolute left-6 top-[450px]" v-if="playerSettings.faction.name">
     <el-form-item>
       <span class="absolute left-02 bottom-8">Tiles away </span>
       <input class="text-black text-center w-full" v-model="tilesAway" />
