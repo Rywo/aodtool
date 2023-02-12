@@ -105,7 +105,8 @@
   </section>
   
 </section>
-
+    <!-- In de toekomst zou ik hier graag twee losse tabs voor hebben (dus dat je als je op de link van het units tab klikt, 
+    dat de buildings verdwijnen en in dezelfde plaats de units voorkomen, dan is het allemaal makkelijk te zien zonder scroll ) -->
     <div id="Buildings" className="lg:col-start-2 lg:row-start-2 w-full" v-if="playerSettings.faction.name">
       <h1 className="text-left lg:col-span-4">Buildings</h1>
         <div
