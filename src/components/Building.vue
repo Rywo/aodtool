@@ -1,8 +1,8 @@
 <template>
-  <div class="flex w-screen lg:w-max">
-    <div class="p-1 py-4 rounded-md shadow-md bg-white grid gap-y-2 w-screen lg:w-[260px]">
-      <section className="flex justify-center gap-x-8">
-      <div className="my-auto text-left">
+  <div class="flex w-screen lg:w-full">
+    <div class="p-1 py-4 rounded-md shadow-md bg-white grid gap-y-2 w-screen lg:w-full">
+      <section className="flex justify-center gap-x-8 max-w-full mx-auto">
+      <div className="my-auto text-left ">
       <h5 class="text-gray-900 text-xl leading-tight font-medium mb-2">
         {{ type }}
       </h5>
