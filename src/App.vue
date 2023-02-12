@@ -15,20 +15,14 @@
         @pick-faction="setFaction"
       />
     </div>
-    <button
-      v-if="this.playerSettings.faction.name == 'The Crunchers'"
-      class="px-2 py-3 w-52 shadow-lg bg-blue-500 hover:bg-blue-700"
-      @click="getForest"
-    >
-      +1 wood for building in forest
-    </button>
+
     </section>
 
     
 
     
   <div id="Resourcebar" className="w-max lg:row-start-1 lg:col-span-4 flex flex-col lg:flex-row gap-y-4 lg:gap-x-8 mx-auto lg:mt-4" v-if="playerSettings.faction.name">
-    <div class="flex flex-col w-full lg:flex-row gap-y-4 lg:space-x-5 justify-center">
+    <div class="flex flex-col w-full lg:flex-row gap-y-4 lg:space-x-5 justify-center text-white">
       <Resources
         v-for="resource in resources"
         :key="resource.type"
@@ -69,14 +63,22 @@
     />
   </div>
 
-  <div className="lg:col-start-1 lg:row-start-3">
+  <div className="lg:col-start-1 lg:row-start-3 text-white">
     <BuildingInv v-if="playerSettings.faction.name" :units="this.units" />
   </div>
 
   <section id="Civ, buy tile, found city and level city section" className="lg:col-start-1 lg:row-start-4 flex flex-col gap-y-8">
   <div class="" v-if="playerSettings.faction.name">
+    <button
+      v-if="this.playerSettings.faction.name == 'The Crunchers'"
+      class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+      @click="getForest"
+    >
+      +1 wood for building in forest
+    </button>
+
     <el-form-item>
-      <span class="">Tiles away </span>
+      <span class="text-white">Tiles away </span>
       <input class="text-black text-center w-full" v-model="tilesAway" />
     </el-form-item>
     <button
@@ -108,7 +110,8 @@
     <!-- In de toekomst zou ik hier graag twee losse tabs voor hebben (dus dat je als je op de link van het units tab klikt, 
     dat de buildings verdwijnen en in dezelfde plaats de units voorkomen, dan is het allemaal makkelijk te zien zonder scroll ) -->
     <div id="Buildings" className="lg:col-start-2 lg:row-start-2 w-full lg:col-span-3" v-if="playerSettings.faction.name">
-      <h2 className="text-left text-2xl">Buildings</h2>
+    <el-tabs type="border-card">
+      <el-tab-pane label="Buildings">
         <div
           class="grid lg:grid-cols-4 w-max lg:w-full gap-4 mt-4"
         >
@@ -123,10 +126,8 @@
             :stone-cost="building.stoneCost"
             @buy-building="buyBuilding"
           />
-        </div>
-
-
-        <h2 className="text-left lg:col-span-4 lg:w-min mt-8 text-2xl">Units</h2>
+        </div></el-tab-pane>
+      <el-tab-pane label="Units">
         <div
           class="
           grid lg:grid-cols-4 w-max gap-4 mt-8
@@ -144,7 +145,13 @@
             :stone-cost="soldier.stoneCost"
             @buy-building="buyUnit"
           />
-        </div>
+        </div></el-tab-pane>
+    </el-tabs>
+    
+      
+
+
+        
   
   </div>
 </main>
@@ -565,6 +572,21 @@ body{
   border: none !important;
   color: white !important;
   text-align: center !important;
+}
+.el-tabs--border-card {
+  border: none !important;
+}
+.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
+  background-color: #3b3b3b;
+  color: white !important;
+  font-weight: bold;
+  border: none;
+}
+.el-tabs__nav-wrap{
+  background-color: #131313;
+}
+.el-tabs__content {
+  background-color: #242424;
 }
 .el-collapse-item__wrap {
   background-color: #242424 !important;
