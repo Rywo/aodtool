@@ -1,20 +1,9 @@
 <template>
   <div
-    class="
-      absolute
-      left-6
-      top-6
-      px-2
-      py-3
-      w-52
-      h-96
-      rounded-3xl
-      border-
-      bg-slate-900
-      shadow-lg
+    class="px-2 py-8 rounded-3xl bg-slate-900 shadow-lg flex flex-col gap-y-2
     "
   >
-    <h1 class="text-gray-500 text-base mt-2">Population</h1>
+    <h1 class="text-gray-500 text-2xl font-bold">Population</h1>
     <div
       class="relative m-auto mt-2 rounded-full w-32 h-32"
       :style="`background-color: ${color}`"

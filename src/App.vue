@@ -1,74 +1,34 @@
 <template>
-  <Player
-    v-if="playerSettings.faction.name"
-    :name="playerSettings.faction.name"
-    :population="playerSettings.population"
-    :color="playerSettings.faction.color"
-    :special="playerSettings.faction.special"
-    :tiles="playerSettings.faction.tiles"
-  />
-
-  <div class="absolute left-6 top-[450px]" v-if="playerSettings.faction.name">
-    <el-form-item>
-      <span class="absolute left-02 bottom-8">Tiles away </span>
-      <input class="text-black text-center w-full" v-model="tilesAway" />
-    </el-form-item>
+  <main id="completewrapper" className="grid lg:grid-cols-4 gap-y-12 gap-x-8 max-w-[1536px] mx-auto">
+ 
+    <section ID="factionselector" className="lg:col-span-4 flex mx-auto">
+    <div v-if="playerSettings.faction.name == 0">
+      <h1>Choose your faction</h1>
+      <Factions
+        v-for="faction in factions"
+        :key="faction.name"
+        :name="faction.name"
+        :special="faction.special"
+        :desc="faction.desc"
+        :color="faction.color"
+        :tags="faction.tags"
+        @pick-faction="setFaction"
+      />
+    </div>
     <button
-      v-if="playerSettings.faction.name"
-      class="px-2 py-3 w-52 shadow-lg bg-slate-900"
-      @click="buyTile"
+      v-if="this.playerSettings.faction.name == 'The Crunchers'"
+      class="px-2 py-3 w-52 shadow-lg bg-blue-500 hover:bg-blue-700"
+      @click="getForest"
     >
-      Buy tile ({{ this.tileCost }})
+      +1 wood for building in forest
     </button>
-  </div>
+    </section>
 
-  <button
-    v-if="playerSettings.faction.name"
-    class="absolute left-6 top-[600px] px-2 py-3 w-52 shadow-lg bg-slate-900"
-    @click="foundCity"
-  >
-    Found city
-  </button>
-  <button
-    v-if="playerSettings.faction.name"
-    class="absolute left-6 top-[700px] px-2 py-3 w-52 shadow-lg bg-slate-900"
-    @click="levelUp"
-  >
-    Level up ({{ this.levelUpCost }} gold)
-  </button>
+    
 
-  <button
-    v-if="this.playerSettings.faction.name == 'The Crunchers'"
-    class="
-      absolute
-      left-[300px]
-      top-[230px]
-      px-2
-      py-3
-      w-52
-      shadow-lg
-      bg-slate-900
-    "
-    @click="getForest"
-  >
-    +1 wood for building in forest
-  </button>
-  <BuildingInv v-if="playerSettings.faction.name" :units="this.units" />
-  <div v-if="playerSettings.faction.name == 0">
-    <h1>Choose your faction</h1>
-    <Factions
-      v-for="faction in factions"
-      :key="faction.name"
-      :name="faction.name"
-      :special="faction.special"
-      :desc="faction.desc"
-      :color="faction.color"
-      :tags="faction.tags"
-      @pick-faction="setFaction"
-    />
-  </div>
-  <div v-if="playerSettings.faction.name">
-    <div class="flex space-x-5 justify-center">
+    
+  <div id="Resourcebar" className="w-max lg:row-start-1 lg:col-span-4 flex flex-col lg:flex-row gap-y-4 lg:gap-x-8 mx-auto lg:mt-4" v-if="playerSettings.faction.name">
+    <div class="flex flex-col w-full lg:flex-row gap-y-4 lg:space-x-5 justify-center">
       <Resources
         v-for="resource in resources"
         :key="resource.type"
@@ -86,25 +46,71 @@
         py-4
         px-8
         rounded
-        my-8
+        w-[250px]
       "
       @click="addResources"
     >
       Next turn
     </button>
-    <el-collapse class="buildings">
-      <el-collapse-item title="Buildings">
+    </div>
+
+
+    
+    <section id="playerinfobox" className="lg:col-start-1 lg:row-start-2 flex flex-col gap-y-8">
+
+    <div id="FactionIndicator" className="lg:col-start-1 lg:row-start-2">
+      <Player
+      v-if="playerSettings.faction.name"
+      :name="playerSettings.faction.name"
+      :population="playerSettings.population"
+      :color="playerSettings.faction.color"
+      :special="playerSettings.faction.special"
+      :tiles="playerSettings.faction.tiles"
+    />
+  </div>
+
+  <div className="lg:col-start-1 lg:row-start-3">
+    <BuildingInv v-if="playerSettings.faction.name" :units="this.units" />
+  </div>
+
+  <section id="Civ, buy tile, found city and level city section" className="lg:col-start-1 lg:row-start-4 flex flex-col gap-y-8">
+  <div class="" v-if="playerSettings.faction.name">
+    <el-form-item>
+      <span class="">Tiles away </span>
+      <input class="text-black text-center w-full" v-model="tilesAway" />
+    </el-form-item>
+    <button
+      v-if="playerSettings.faction.name"
+      class="px-2 py-3 w-full shadow-lg bg-blue-500 hover:bg-blue-700"
+      @click="buyTile"
+    >
+      Buy tile ({{ this.tileCost }})
+    </button>
+  </div>
+
+  <button
+    v-if="playerSettings.faction.name"
+    class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+    @click="foundCity"
+  >
+    Found city
+  </button>
+  <button
+    v-if="playerSettings.faction.name"
+    class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+    @click="levelUp"
+  >
+    Level up ({{ this.levelUpCost }} gold)
+  </button>
+  </section>
+  
+</section>
+    <!-- In de toekomst zou ik hier graag twee losse tabs voor hebben (dus dat je als je op de link van het units tab klikt, 
+    dat de buildings verdwijnen en in dezelfde plaats de units voorkomen, dan is het allemaal makkelijk te zien zonder scroll ) -->
+    <div id="Buildings" className="lg:col-start-2 lg:row-start-2 w-full" v-if="playerSettings.faction.name">
+      <h1 className="text-left lg:col-span-4">Buildings</h1>
         <div
-          class="
-            space-x-3
-            mt-5
-            grid grid-cols-1
-            sm:grid-cols-1
-            md:grid-cols-4
-            lg:grid-cols-4
-            xl:grid-cols-4
-            gap-5
-          "
+          class="grid lg:grid-cols-4 w-max gap-4 mt-4"
         >
           <Building
             v-for="building in buildings"
@@ -118,23 +124,15 @@
             @buy-building="buyBuilding"
           />
         </div>
-      </el-collapse-item>
-    </el-collapse>
 
-    <el-collapse class="buildings">
-      <el-collapse-item title="Units">
+
+        <h1 className="text-left lg:col-span-4 mt-8">Units</h1>
         <div
           class="
-            space-x-3
-            mt-5
-            grid grid-cols-1
-            sm:grid-cols-1
-            md:grid-cols-4
-            lg:grid-cols-4
-            xl:grid-cols-4
-            gap-5
+          grid lg:grid-cols-4 w-max gap-4 mt-8
           "
         >
+        
           <Building
             v-for="soldier in soldiers"
             :key="soldier.type"
@@ -147,9 +145,9 @@
             @buy-building="buyUnit"
           />
         </div>
-      </el-collapse-item>
-    </el-collapse>
+  
   </div>
+</main>
 </template>
 
 <script>
@@ -449,6 +447,18 @@ their eyes are only on the forests around them.`,
           this.levelUpCost = this.levelUpCost + baseCost;
         } else {
           // cost is the previous level up cost plus the base cost
+          // run een for loop met het aantal loops dat gelijk staat aan het nummer dat je in een inputbox plaatst (index). 
+          // Daarna run je elke keer de formule die hieronder staat totdat de forloop stopt, als een nieuw getal in de input 
+          // word ingevuld reset het getal terug naar het basis nummer (5) en run je de for loop opnieuw met het
+          // nieuwe index nummer. 
+
+          // var primaryCost = 5
+          // var newcost = 0
+          // newcost = primaryCost + baseCost
+          // primaryCost = newcost
+
+          //Reloop totdat je het index nummer hebt bereikt, dat is de cost voor die specifieke upgrade.
+
           this.resources[0].amount -= this.levelUpCost;
           this.resources[1].amount -= this.levelUpCost;
           this.resources[2].amount -= this.levelUpCost;
