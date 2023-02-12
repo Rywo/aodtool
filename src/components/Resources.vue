@@ -1,8 +1,8 @@
 <template>
-  <div class="border rounded-xl p-5">
-    <span class="text-yellow-400">+{{ modifier }}</span>
+  <div class="border rounded-xl p-5 flex gap-x-4 w-full h-min">
     <h2>{{ type }}</h2>
     <h2>{{ amount }}</h2>
+    <span class="text-yellow-400 w-max">(+{{ modifier }} per turn)</span>
   </div>
 </template>
 
