@@ -19,7 +19,7 @@
           trigger="hover"
         >
           <template #reference>
-            <img class="h-12 m-auto" :src="`/assets/img/` + unit + `.png`" />
+            <img class="h-12 m-auto" :src="`/assets/img/` + unit + `.png`" @click="deleteUnit(unit)"/>
           </template>
         </el-popover>
       </div>
@@ -34,5 +34,10 @@ export default {
       type: Array,
     },
   },
+  methods: {
+    deleteUnit(unit){
+      this.$emit("delete-unit", unit)
+    }
+  }
 };
 </script>

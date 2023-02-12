@@ -3,7 +3,7 @@
  
     <section ID="factionselector" className="lg:col-span-4 flex mx-auto">
     <div v-if="playerSettings.faction.name == 0">
-      <h1>Choose your faction</h1>
+      <h1 class="text-white">Choose your faction</h1>
       <Factions
         v-for="faction in factions"
         :key="faction.name"
@@ -18,9 +18,6 @@
 
     </section>
 
-    
-
-    
   <div id="Resourcebar" className="w-max lg:row-start-1 lg:col-span-4 flex flex-col lg:flex-row gap-y-4 lg:gap-x-8 mx-auto lg:mt-4" v-if="playerSettings.faction.name">
     <div class="flex flex-col w-full lg:flex-row gap-y-4 lg:space-x-5 justify-center text-white">
       <Resources
@@ -51,7 +48,11 @@
 
     
     <section id="playerinfobox" className="lg:col-start-1 lg:row-start-2 flex flex-col gap-y-8">
-
+    
+    
+      <span v-if="playerSettings.faction.name" class="text-2xl font-bold text-white">Turn: {{turn}}</span>
+    
+    
     <div id="FactionIndicator" className="lg:col-start-1 lg:row-start-2">
       <Player
       v-if="playerSettings.faction.name"
@@ -145,14 +146,38 @@
             :stone-cost="soldier.stoneCost"
             @buy-building="buyUnit"
           />
-        </div></el-tab-pane>
+        </div>
+      </el-tab-pane>
+        <el-tab-pane label="Cities">
+        <div
+          class="
+                px-2
+                py-3
+                rounded-xl
+                bg-slate-600/50
+                shadow-md
+              "
+        >
+
+        <h2 class="text-2xl text-white">Capital</h2>
+        <div class="flex space-x-5 mb-5">
+          <span class="text-xl text-white">Capital population</span>
+          <h3 class="text-xl text-white">Capital name</h3>
+        </div> 
+
+        <h2 class="text-2xl text-white">Cities</h2>
+            <City v-for="city in cities" :name="city.name" :population="city.population" :level="city.levelUpCost" @lvl-city="cityLevelUp" />
+        </div>
+        </el-tab-pane>
+        <el-tab-pane label="Additional">
+          <button
+              v-if="playerSettings.faction.name"
+              class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            >
+              Plunder
+          </button>
+        </el-tab-pane>
     </el-tabs>
-    
-      
-
-
-        
-  
   </div>
 </main>
 </template>
@@ -163,9 +188,10 @@ import Resources from "./components/Resources.vue";
 import Building from "./components/Building.vue";
 import BuildingInv from "./components/BuildingInv.vue";
 import Factions from "./components/Factions.vue";
+import City from "./components/City.vue";
 
 export default {
-  components: { Resources, Building, Factions, Player, BuildingInv },
+  components: { Resources, Building, Factions, Player, BuildingInv, City, },
   data() {
     return {
       noResources: false,
@@ -398,7 +424,14 @@ their eyes are only on the forests around them.`,
         },
       ],
       units: ["Warrior"],
+      cities: [
+        { name: "Duckstad",
+      population: 1,
+    levelUpCost: 5,}
+      ],
+      cityNames: ["Owuocok", "Eflark", "Ezeoplarc", "Okrens", "Axathe", "Ejeiksea", "Duckstad", "Uprathe", "Oteahgas", "Ifluudille", "Hylia", "Eyrane", "Resembool", "Steelbarrow"],
       unitsOwned: 1,
+      turn: 1,
     };
   },
   watch: {
@@ -416,6 +449,8 @@ their eyes are only on the forests around them.`,
       for (let i = 0; i < this.resources.length; i++) {
         this.resources[i].amount += this.resources[i].modifier;
       }
+      console.log(uuid.v4())
+      this.turn += 1;
     },
     buyUnit(food, wood, gold, stone, type) {
       let currentFood = this.resources[0].amount;
@@ -435,8 +470,10 @@ their eyes are only on the forests around them.`,
           this.resources[1].amount -= wood;
           this.resources[2].amount -= gold;
           this.resources[3].amount -= stone;
+          this.unitsOwned++;
+        } else { 
+          this.showAlert();
         }
-        this.unitsOwned++;
       } else {
         this.showUnitAlert();
       }
@@ -453,19 +490,6 @@ their eyes are only on the forests around them.`,
           this.resources[3].amount -= 5;
           this.levelUpCost = this.levelUpCost + baseCost;
         } else {
-          // cost is the previous level up cost plus the base cost
-          // run een for loop met het aantal loops dat gelijk staat aan het nummer dat je in een inputbox plaatst (index). 
-          // Daarna run je elke keer de formule die hieronder staat totdat de forloop stopt, als een nieuw getal in de input 
-          // word ingevuld reset het getal terug naar het basis nummer (5) en run je de for loop opnieuw met het
-          // nieuwe index nummer. 
-
-          // var primaryCost = 5
-          // var newcost = 0
-          // newcost = primaryCost + baseCost
-          // primaryCost = newcost
-
-          //Reloop totdat je het index nummer hebt bereikt, dat is de cost voor die specifieke upgrade.
-
           this.resources[0].amount -= this.levelUpCost;
           this.resources[1].amount -= this.levelUpCost;
           this.resources[2].amount -= this.levelUpCost;
@@ -481,6 +505,32 @@ their eyes are only on the forests around them.`,
         this.showAlert();
       }
     },
+    cityLevelUp(name){
+      const currentCity = this.cities.filter(city => city.name == name);
+      const baseCost = 8;
+      if (this.resources[0].amount >= currentCity[0].levelUpCost) {
+        if (currentCity.population <= 1) {
+          // cost is 5
+          this.resources[0].amount -= 5;
+          this.resources[1].amount -= 5;
+          this.resources[2].amount -= 5;
+          this.resources[3].amount -= 5;
+          currentCity[0].levelUpCost = currentCity[0].levelUpCost + baseCost;
+        } else {
+          this.resources[0].amount -= currentCity[0].levelUpCost;
+          this.resources[1].amount -= currentCity[0].levelUpCost;
+          this.resources[2].amount -= currentCity[0].levelUpCost;
+          this.resources[3].amount -= currentCity[0].levelUpCost;
+          currentCity[0].levelUpCost = currentCity[0].levelUpCost + baseCost;
+        }
+        currentCity[0].population++;
+        if (this.playerSettings.faction.name == "The Whoolies") {
+          currentCity[0].population++;
+        }
+      } else {
+        this.showAlert();
+      }
+    },
     buyTile() {
       if (this.resources[2].amount >= this.tileCost) {
         this.resources[2].amount -= this.tileCost;
@@ -490,6 +540,7 @@ their eyes are only on the forests around them.`,
       }
     },
     foundCity() {
+      const randomCityName = this.cityNames[Math.floor(Math.random() * this.cityNames.length)];
       if (this.units.includes("Settler")) {
         this.resources[0].modifier++;
         this.resources[1].modifier++;
@@ -497,6 +548,7 @@ their eyes are only on the forests around them.`,
         this.resources[3].modifier++;
         this.playerSettings.population++;
         this.units = this.units.filter((element) => element != "Settler");
+        this.cities.push({name: randomCityName, population: 1, levelUpCost: 5})
       } else {
         this.$swal("You do not own a settler");
       }
@@ -544,6 +596,9 @@ their eyes are only on the forests around them.`,
         this.showAlert();
       }
     },
+    deleteUnit(unit){
+      this.units = this.units.filter((element) => element != unit);
+    },
     toggleAlert() {
       this.noResources = !this.noResources;
     },
@@ -577,7 +632,7 @@ body{
   border: none !important;
 }
 .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
-  background-color: #3b3b3b;
+  background-color: #3b3b3b !important;
   color: white !important;
   font-weight: bold;
   border: none;
