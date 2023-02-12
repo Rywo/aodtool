@@ -1,5 +1,5 @@
 <template>
-  <main id="completewrapper" className="grid lg:grid-cols-4 gap-y-12 gap-x-8 max-w-[1536px] mx-auto">
+  <main id="completewrapper" className="grid lg:grid-cols-4 gap-y-12 gap-x-8 2xl:max-w-[1536px] 2xl:mx-auto">
  
     <section ID="factionselector" className="lg:col-span-4 flex mx-auto">
     <div v-if="playerSettings.faction.name == 0">
@@ -46,7 +46,7 @@
         py-4
         px-8
         rounded
-        w-[250px]
+        max-w-[250px]
       "
       @click="addResources"
     >
@@ -107,10 +107,10 @@
 </section>
     <!-- In de toekomst zou ik hier graag twee losse tabs voor hebben (dus dat je als je op de link van het units tab klikt, 
     dat de buildings verdwijnen en in dezelfde plaats de units voorkomen, dan is het allemaal makkelijk te zien zonder scroll ) -->
-    <div id="Buildings" className="lg:col-start-2 lg:row-start-2 w-full" v-if="playerSettings.faction.name">
-      <h2 className="text-left lg:col-span-4 text-2xl">Buildings</h2>
+    <div id="Buildings" className="lg:col-start-2 lg:row-start-2 w-full lg:col-span-3" v-if="playerSettings.faction.name">
+      <h2 className="text-left text-2xl">Buildings</h2>
         <div
-          class="grid lg:grid-cols-4 w-max gap-4 mt-4"
+          class="grid lg:grid-cols-4 w-max lg:w-full gap-4 mt-4"
         >
           <Building
             v-for="building in buildings"
@@ -126,7 +126,7 @@
         </div>
 
 
-        <h2 className="text-left lg:col-span-4 mt-8 text-2xl">Units</h2>
+        <h2 className="text-left lg:col-span-4 lg:w-min mt-8 text-2xl">Units</h2>
         <div
           class="
           grid lg:grid-cols-4 w-max gap-4 mt-8
