@@ -17,9 +17,12 @@
     </div>
 
     </section>
+  <div id="resourcebargridplaceholder" className="hidden lg:block lg:row-start-1 h-[60px]">
 
-  <div id="Resourcebar" className="w-max lg:row-start-1 lg:col-span-4 flex flex-col lg:flex-row gap-y-4 lg:gap-x-8 mx-auto lg:mt-4" v-if="playerSettings.faction.name">
-    <div class="flex flex-col w-full lg:flex-row gap-y-4 lg:space-x-5 justify-center text-white">
+  </div>
+  <div id="Resourcebar" className="w-max lg:row-start-1 lg:col-span-4 mx-auto lg:mt-4" v-if="playerSettings.faction.name">
+    <section className="lg:fixed lg:left-[50%] z-10 lg:transform lg:-translate-x-[50%] flex flex-col lg:flex-row gap-y-4 lg:gap-x-2 xl:gap-x-5">
+    <div class="flex flex-col w-full lg:flex-row gap-y-4 lg:space-x-2 2xl:space-x-5 justify-center text-white">
       <Resources
         v-for="resource in resources"
         :key="resource.type"
@@ -29,20 +32,19 @@
       />
     </div>
     <button
-      class="
+      className="
         bg-blue-500
         hover:bg-blue-700
         text-white
         font-bold
-        py-4
-        px-8
-        rounded
-        max-w-[250px]
+        rounded-lg
+        w-[200px]
       "
       @click="addResources"
     >
       Next turn
     </button>
+  </section>
     </div>
 
 
@@ -114,7 +116,7 @@
     <el-tabs type="border-card">
       <el-tab-pane label="Buildings">
         <div
-          class="grid lg:grid-cols-4 w-max lg:w-full gap-4 mt-4"
+          class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-4"
         >
           <Building
             v-for="building in buildings"
@@ -131,7 +133,7 @@
       <el-tab-pane label="Units">
         <div
           class="
-          grid lg:grid-cols-4 w-max gap-4 mt-8
+          grid  lg:grid-cols-3 2xl:grid-cols-4 w-max gap-4 mt-8
           "
         >
         
@@ -416,7 +418,7 @@ their eyes are only on the forests around them.`,
         {
           type: "Wonder",
           subject:
-            "A wonder of research, faith and engineering. After 50 turns, win the game.",
+            "After 50 turns, win the game.",
           foodCost: 150,
           woodCost: 150,
           goldCost: 150,
