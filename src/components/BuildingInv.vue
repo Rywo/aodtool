@@ -1,11 +1,6 @@
 <template>
   <div
     class="
-      absolute
-      left-72
-      top-6
-      w-96
-      h-48
       px-2
       py-3
       rounded-xl
@@ -15,7 +10,7 @@
   >
     <h1 class="text-sm">Inventory</h1>
 
-    <div class="flex justify-center">
+    <div class="grid grid-cols-6 justify-center">
       <div class="mt-2" v-for="(unit, idx) in units" :key="idx">
         <el-popover
           placement="bottom"
@@ -24,7 +19,7 @@
           trigger="hover"
         >
           <template #reference>
-            <img class="h-12 m-auto" :src="`/assets/img/` + unit + `.png`" />
+            <img class="h-12 m-auto" :src="`/assets/img/` + unit + `.png`" @click="deleteUnit(unit)"/>
           </template>
         </el-popover>
       </div>
@@ -39,5 +34,10 @@ export default {
       type: Array,
     },
   },
+  methods: {
+    deleteUnit(unit){
+      this.$emit("delete-unit", unit)
+    }
+  }
 };
 </script>

@@ -1,7 +1,16 @@
 <template>
-  <div class="p-4 hover:scale-105 duration-500" @click="pickFaction">
-    <div class="flex items-center justify-between p-4 rounded-lg bg-slate-800">
-      <div>
+  <div class="p-4 hover:scale-105 duration-500 rounded-lg" @click="pickFaction">
+    
+    <div class="flex justify-between gap-x-20 py-8 px-20 rounded-lg bg-gray-700 max-w-[1200px]">
+      <div
+      class="w-40 h-32 rounded-full flex justify-center items-center"
+      :style="`background-color: ${color}`"
+      >
+        <div>
+          <h1 class="text-slate-800 text-2xl">{{ name }}</h1>
+        </div>
+      </div>
+      <div className="text-left w-full">
         <h2 class="text-gray-900 text-lg font-bold" :style="`color: ${color}`">
           {{ name }}
         </h2>
@@ -11,7 +20,7 @@
         <p class="text-sm font-semibold text-gray-50">
           {{ desc }}
         </p>
-        <div class="p-2">
+        <div class="py-2">
           <el-tag
             v-for="tag in tags"
             :key="tag.name"
@@ -22,14 +31,7 @@
           >
         </div>
       </div>
-      <div
-        class="w-32 h-32 rounded-full flex justify-center items-center"
-        :style="`background-color: ${color}`"
-      >
-        <div>
-          <h1 class="text-slate-800 text-2xl">{{ name }}</h1>
-        </div>
-      </div>
+      
     </div>
   </div>
 </template>

@@ -1,74 +1,28 @@
 <template>
-  <Player
-    v-if="playerSettings.faction.name"
-    :name="playerSettings.faction.name"
-    :population="playerSettings.population"
-    :color="playerSettings.faction.color"
-    :special="playerSettings.faction.special"
-    :tiles="playerSettings.faction.tiles"
-  />
+  <main id="completewrapper" className="grid lg:grid-cols-4 gap-y-12 gap-x-8 2xl:max-w-[1536px] 2xl:mx-auto">
+ 
+    <section ID="factionselector" className="lg:col-span-4 flex mx-auto">
+    <div v-if="playerSettings.faction.name == 0">
+      <h1 class="text-white">Choose your faction</h1>
+      <Factions
+        v-for="faction in factions"
+        :key="faction.name"
+        :name="faction.name"
+        :special="faction.special"
+        :desc="faction.desc"
+        :color="faction.color"
+        :tags="faction.tags"
+        @pick-faction="setFaction"
+      />
+    </div>
 
-  <div class="absolute left-6 top-[450px]" v-if="playerSettings.faction.name">
-    <el-form-item>
-      <span class="absolute left-02 bottom-8">Tiles away </span>
-      <input class="text-black text-center w-full" v-model="tilesAway" />
-    </el-form-item>
-    <button
-      v-if="playerSettings.faction.name"
-      class="px-2 py-3 w-52 shadow-lg bg-slate-900"
-      @click="buyTile"
-    >
-      Buy tile ({{ this.tileCost }})
-    </button>
+    </section>
+  <div id="resourcebargridplaceholder" className="hidden lg:block lg:row-start-1 h-[60px]">
+
   </div>
-
-  <button
-    v-if="playerSettings.faction.name"
-    class="absolute left-6 top-[600px] px-2 py-3 w-52 shadow-lg bg-slate-900"
-    @click="foundCity"
-  >
-    Found city
-  </button>
-  <button
-    v-if="playerSettings.faction.name"
-    class="absolute left-6 top-[700px] px-2 py-3 w-52 shadow-lg bg-slate-900"
-    @click="levelUp"
-  >
-    Level up ({{ this.levelUpCost }} gold)
-  </button>
-
-  <button
-    v-if="this.playerSettings.faction.name == 'The Crunchers'"
-    class="
-      absolute
-      left-[300px]
-      top-[230px]
-      px-2
-      py-3
-      w-52
-      shadow-lg
-      bg-slate-900
-    "
-    @click="getForest"
-  >
-    +1 wood for building in forest
-  </button>
-  <BuildingInv v-if="playerSettings.faction.name" :units="this.units" />
-  <div v-if="playerSettings.faction.name == 0">
-    <h1>Choose your faction</h1>
-    <Factions
-      v-for="faction in factions"
-      :key="faction.name"
-      :name="faction.name"
-      :special="faction.special"
-      :desc="faction.desc"
-      :color="faction.color"
-      :tags="faction.tags"
-      @pick-faction="setFaction"
-    />
-  </div>
-  <div v-if="playerSettings.faction.name">
-    <div class="flex space-x-5 justify-center">
+  <div id="Resourcebar" className="w-max lg:row-start-1 lg:col-span-4 mx-auto lg:mt-4" v-if="playerSettings.faction.name">
+    <section className="lg:fixed lg:left-[50%] z-10 lg:transform lg:-translate-x-[50%] flex flex-col lg:flex-row gap-y-4 lg:gap-x-2 xl:gap-x-5">
+    <div class="flex flex-col w-full lg:flex-row gap-y-4 lg:space-x-2 2xl:space-x-5 justify-center text-white">
       <Resources
         v-for="resource in resources"
         :key="resource.type"
@@ -78,33 +32,91 @@
       />
     </div>
     <button
-      class="
+      className="
         bg-blue-500
         hover:bg-blue-700
         text-white
         font-bold
-        py-4
-        px-8
-        rounded
-        my-8
+        rounded-lg
+        w-[200px]
       "
       @click="addResources"
     >
       Next turn
     </button>
-    <el-collapse class="buildings">
-      <el-collapse-item title="Buildings">
+  </section>
+    </div>
+
+
+    
+    <section id="playerinfobox" className="lg:col-start-1 lg:row-start-2 flex flex-col gap-y-8">
+    
+    
+      <span v-if="playerSettings.faction.name" class="text-2xl font-bold text-white">Turn: {{turn}}</span>
+    
+    
+    <div id="FactionIndicator" className="lg:col-start-1 lg:row-start-2">
+      <Player
+      v-if="playerSettings.faction.name"
+      :name="playerSettings.faction.name"
+      :population="playerSettings.population"
+      :color="playerSettings.faction.color"
+      :special="playerSettings.faction.special"
+      :tiles="playerSettings.faction.tiles"
+    />
+  </div>
+
+  <div className="lg:col-start-1 lg:row-start-3 text-white">
+    <BuildingInv v-if="playerSettings.faction.name" :units="this.units" />
+  </div>
+
+  <section id="Civ, buy tile, found city and level city section" className="lg:col-start-1 lg:row-start-4 flex flex-col gap-y-8">
+  <div class="" v-if="playerSettings.faction.name">
+    <button
+      v-if="this.playerSettings.faction.name == 'The Crunchers'"
+      class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+      @click="getForest"
+    >
+      +1 wood for building in forest
+    </button>
+
+    <el-form-item>
+      <span class="text-white">Tiles away </span>
+      <input class="text-black text-center w-full" v-model="tilesAway" />
+    </el-form-item>
+    <button
+      v-if="playerSettings.faction.name"
+      class="px-2 py-3 w-full shadow-lg bg-blue-500 hover:bg-blue-700"
+      @click="buyTile"
+    >
+      Buy tile ({{ this.tileCost }})
+    </button>
+  </div>
+
+  <button
+    v-if="playerSettings.faction.name"
+    class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+    @click="foundCity"
+  >
+    Found city
+  </button>
+  <button
+    v-if="playerSettings.faction.name"
+    class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+    @click="levelUp"
+  >
+    Level up ({{ this.levelUpCost }} gold)
+  </button>
+  </section>
+  
+</section>
+    <!-- In de toekomst zou ik hier graag twee losse tabs voor hebben (dus dat je als je op de link van het units tab klikt, 
+    dat de buildings verdwijnen en in dezelfde plaats de units voorkomen, dan is het allemaal makkelijk te zien zonder scroll ) -->
+    <div id="Buildings" className="lg:col-start-2 lg:row-start-2 w-full lg:col-span-3" v-if="playerSettings.faction.name">
+    <el-tabs type="border-card">
+      <el-tab-pane label="Buildings">
         <div
-          class="
-            space-x-3
-            mt-5
-            grid grid-cols-1
-            sm:grid-cols-1
-            md:grid-cols-4
-            lg:grid-cols-4
-            xl:grid-cols-4
-            gap-5
-          "
+          class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-4"
         >
           <Building
             v-for="building in buildings"
@@ -117,24 +129,14 @@
             :stone-cost="building.stoneCost"
             @buy-building="buyBuilding"
           />
-        </div>
-      </el-collapse-item>
-    </el-collapse>
-
-    <el-collapse class="buildings">
-      <el-collapse-item title="Units">
+        </div></el-tab-pane>
+      <el-tab-pane label="Units">
         <div
           class="
-            space-x-3
-            mt-5
-            grid grid-cols-1
-            sm:grid-cols-1
-            md:grid-cols-4
-            lg:grid-cols-4
-            xl:grid-cols-4
-            gap-5
+          grid  lg:grid-cols-3 2xl:grid-cols-4 w-max gap-4 mt-8
           "
         >
+        
           <Building
             v-for="soldier in soldiers"
             :key="soldier.type"
@@ -147,9 +149,39 @@
             @buy-building="buyUnit"
           />
         </div>
-      </el-collapse-item>
-    </el-collapse>
+      </el-tab-pane>
+        <el-tab-pane label="Cities">
+        <div
+          class="
+                px-2
+                py-3
+                rounded-xl
+                bg-slate-600/50
+                shadow-md
+              "
+        >
+
+        <h2 class="text-2xl text-white">Capital</h2>
+        <div class="flex space-x-5 mb-5">
+          <span class="text-xl text-white">Capital population</span>
+          <h3 class="text-xl text-white">Capital name</h3>
+        </div> 
+
+        <h2 class="text-2xl text-white">Cities</h2>
+            <City v-for="city in cities" :name="city.name" :population="city.population" :level="city.levelUpCost" @lvl-city="cityLevelUp" />
+        </div>
+        </el-tab-pane>
+        <el-tab-pane label="Additional">
+          <button
+              v-if="playerSettings.faction.name"
+              class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            >
+              Plunder
+          </button>
+        </el-tab-pane>
+    </el-tabs>
   </div>
+</main>
 </template>
 
 <script>
@@ -158,9 +190,10 @@ import Resources from "./components/Resources.vue";
 import Building from "./components/Building.vue";
 import BuildingInv from "./components/BuildingInv.vue";
 import Factions from "./components/Factions.vue";
+import City from "./components/City.vue";
 
 export default {
-  components: { Resources, Building, Factions, Player, BuildingInv },
+  components: { Resources, Building, Factions, Player, BuildingInv, City, },
   data() {
     return {
       noResources: false,
@@ -385,7 +418,7 @@ their eyes are only on the forests around them.`,
         {
           type: "Wonder",
           subject:
-            "A wonder of research, faith and engineering. After 50 turns, win the game.",
+            "After 50 turns, win the game.",
           foodCost: 150,
           woodCost: 150,
           goldCost: 150,
@@ -393,7 +426,14 @@ their eyes are only on the forests around them.`,
         },
       ],
       units: ["Warrior"],
+      cities: [
+        { name: "Duckstad",
+      population: 1,
+    levelUpCost: 5,}
+      ],
+      cityNames: ["Owuocok", "Eflark", "Ezeoplarc", "Okrens", "Axathe", "Ejeiksea", "Duckstad", "Uprathe", "Oteahgas", "Ifluudille", "Hylia", "Eyrane", "Resembool", "Steelbarrow"],
       unitsOwned: 1,
+      turn: 1,
     };
   },
   watch: {
@@ -411,6 +451,8 @@ their eyes are only on the forests around them.`,
       for (let i = 0; i < this.resources.length; i++) {
         this.resources[i].amount += this.resources[i].modifier;
       }
+      console.log(uuid.v4())
+      this.turn += 1;
     },
     buyUnit(food, wood, gold, stone, type) {
       let currentFood = this.resources[0].amount;
@@ -430,8 +472,10 @@ their eyes are only on the forests around them.`,
           this.resources[1].amount -= wood;
           this.resources[2].amount -= gold;
           this.resources[3].amount -= stone;
+          this.unitsOwned++;
+        } else { 
+          this.showAlert();
         }
-        this.unitsOwned++;
       } else {
         this.showUnitAlert();
       }
@@ -448,7 +492,6 @@ their eyes are only on the forests around them.`,
           this.resources[3].amount -= 5;
           this.levelUpCost = this.levelUpCost + baseCost;
         } else {
-          // cost is the previous level up cost plus the base cost
           this.resources[0].amount -= this.levelUpCost;
           this.resources[1].amount -= this.levelUpCost;
           this.resources[2].amount -= this.levelUpCost;
@@ -464,6 +507,32 @@ their eyes are only on the forests around them.`,
         this.showAlert();
       }
     },
+    cityLevelUp(name){
+      const currentCity = this.cities.filter(city => city.name == name);
+      const baseCost = 8;
+      if (this.resources[0].amount >= currentCity[0].levelUpCost) {
+        if (currentCity.population <= 1) {
+          // cost is 5
+          this.resources[0].amount -= 5;
+          this.resources[1].amount -= 5;
+          this.resources[2].amount -= 5;
+          this.resources[3].amount -= 5;
+          currentCity[0].levelUpCost = currentCity[0].levelUpCost + baseCost;
+        } else {
+          this.resources[0].amount -= currentCity[0].levelUpCost;
+          this.resources[1].amount -= currentCity[0].levelUpCost;
+          this.resources[2].amount -= currentCity[0].levelUpCost;
+          this.resources[3].amount -= currentCity[0].levelUpCost;
+          currentCity[0].levelUpCost = currentCity[0].levelUpCost + baseCost;
+        }
+        currentCity[0].population++;
+        if (this.playerSettings.faction.name == "The Whoolies") {
+          currentCity[0].population++;
+        }
+      } else {
+        this.showAlert();
+      }
+    },
     buyTile() {
       if (this.resources[2].amount >= this.tileCost) {
         this.resources[2].amount -= this.tileCost;
@@ -473,6 +542,7 @@ their eyes are only on the forests around them.`,
       }
     },
     foundCity() {
+      const randomCityName = this.cityNames[Math.floor(Math.random() * this.cityNames.length)];
       if (this.units.includes("Settler")) {
         this.resources[0].modifier++;
         this.resources[1].modifier++;
@@ -480,6 +550,7 @@ their eyes are only on the forests around them.`,
         this.resources[3].modifier++;
         this.playerSettings.population++;
         this.units = this.units.filter((element) => element != "Settler");
+        this.cities.push({name: randomCityName, population: 1, levelUpCost: 5})
       } else {
         this.$swal("You do not own a settler");
       }
@@ -527,6 +598,9 @@ their eyes are only on the forests around them.`,
         this.showAlert();
       }
     },
+    deleteUnit(unit){
+      this.units = this.units.filter((element) => element != unit);
+    },
     toggleAlert() {
       this.noResources = !this.noResources;
     },
@@ -547,11 +621,29 @@ their eyes are only on the forests around them.`,
 </script>
 
 <style>
+body{
+  background-color: #242424;
+}
 .el-collapse-item__header {
   background-color: #151515 !important;
   border: none !important;
   color: white !important;
   text-align: center !important;
+}
+.el-tabs--border-card {
+  border: none !important;
+}
+.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
+  background-color: #3b3b3b !important;
+  color: white !important;
+  font-weight: bold;
+  border: none;
+}
+.el-tabs__nav-wrap{
+  background-color: #131313;
+}
+.el-tabs__content {
+  background-color: #242424;
 }
 .el-collapse-item__wrap {
   background-color: #242424 !important;

@@ -1,30 +1,34 @@
 <template>
-  <div class="flex justify-center">
-    <div class="block p-1 rounded-md shadow-md bg-white max-w-sm">
+  <div class="flex w-screen lg:w-full">
+    <div class="p-1 py-4 rounded-md shadow-md bg-white grid gap-y-2 w-screen lg:w-full">
+      <section className="flex justify-center gap-x-8 max-w-full mx-auto">
+      <div className="my-auto text-left ">
       <h5 class="text-gray-900 text-xl leading-tight font-medium mb-2">
         {{ type }}
       </h5>
       <h6 class="text-gray-900 font-bold">{{ subject }}</h6>
-      <img class="h-20 m-auto" :src="`/assets/img/` + type + `.png`" />
-      <p class="text-gray-700 text-base mb-4">
+      </div>
+      <img class="h-20" :src="`/assets/img/` + type + `.png`" />
+    </section>
+      <p class="text-gray-700 text-base">
         This costs the following materials:
       </p>
       <div class="flex justify-center space-x-3">
         <div>
-          <h3 class="text-gray-700 text-base mb-4 font-bold">Food</h3>
-          <h4 class="text-gray-700 text-base mb-4">{{ foodCost }}</h4>
+          <h3 class="text-gray-700 text-base mb-2 font-bold">Food</h3>
+          <h4 class="text-gray-700 text-base">{{ foodCost }}</h4>
         </div>
         <div>
-          <h3 class="text-gray-700 text-base mb-4 font-bold">Wood</h3>
-          <h4 class="text-gray-700 text-base mb-4">{{ woodCost }}</h4>
+          <h3 class="text-gray-700 text-base mb-2 font-bold">Wood</h3>
+          <h4 class="text-gray-700 text-base">{{ woodCost }}</h4>
         </div>
         <div>
-          <h3 class="text-gray-700 text-base mb-4 font-bold">Gold</h3>
-          <h4 class="text-gray-700 text-base mb-4">{{ goldCost }}</h4>
+          <h3 class="text-gray-700 text-base mb-2 font-bold">Gold</h3>
+          <h4 class="text-gray-700 text-base">{{ goldCost }}</h4>
         </div>
         <div>
-          <h3 class="text-gray-700 text-base mb-4 font-bold">Stone</h3>
-          <h4 class="text-gray-700 text-base mb-4">{{ stoneCost }}</h4>
+          <h3 class="text-gray-700 text-base mb-2 font-bold">Stone</h3>
+          <h4 class="text-gray-700 text-base">{{ stoneCost }}</h4>
         </div>
       </div>
       <button
