@@ -14,6 +14,8 @@
     </div>
     <h1 class="text-gray-500 text-3xl mt-2">{{ name }}</h1>
     <span>{{ special }}</span>
+
+    <button :style="`background-color: ${color}`" class="w-1/2 m-auto mt-5" @click="buySpecial">Buy special unit</button>
   </div>
 </template>
 
@@ -41,5 +43,10 @@ export default {
       required: true,
     },
   },
+  methods: {
+    buySpecial(){
+      this.$emit("buy-special", this.name);
+    }
+  }
 };
 </script>
