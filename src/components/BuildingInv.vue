@@ -14,12 +14,12 @@
       <div class="mt-2" v-for="(unit, idx) in units" :key="idx">
         <el-popover
           placement="bottom"
-          :title="unit"
+          :title="unit.title"
           :width="200"
           trigger="hover"
         >
           <template #reference>
-            <img class="h-12 m-auto" :src="`/assets/img/` + unit + `.png`" @click="deleteUnit(unit)"/>
+            <img class="h-12 m-auto" :src="`/assets/img/` + unit.name + `.png`" @click="deleteUnit(unit.id)"/>
           </template>
         </el-popover>
       </div>
@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     deleteUnit(unit){
-      this.$emit("delete-unit", unit)
+      this.$emit("delete", unit)
     }
   }
 };

@@ -7,6 +7,10 @@
     <button @click="increasePopulation">
         Level up ({{ level }})
     </button>
+
+    <button @click="destroyCity">
+        Destroy
+    </button>
 </div>
 </template>
 
@@ -22,6 +26,10 @@ export default {
             type: Number,
             required: true,
         },
+        id: {
+            type: String,
+            required: true,
+        },
         level: {
             type: Number,
             required: true,
@@ -29,7 +37,10 @@ export default {
     },
     methods: {
         increasePopulation(){
-            this.$emit("lvl-city", this.name);
+            this.$emit("lvl-city", this.id);
+        },
+        destroyCity(){
+            this.$emit("destroy-city", this.id);
         }
     }
 }

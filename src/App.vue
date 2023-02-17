@@ -59,15 +59,16 @@
       <Player
       v-if="playerSettings.faction.name"
       :name="playerSettings.faction.name"
-      :population="playerSettings.population"
+      :population="totalPopulation"
       :color="playerSettings.faction.color"
       :special="playerSettings.faction.special"
       :tiles="playerSettings.faction.tiles"
+      @buy-special="buySpecial"
     />
   </div>
 
   <div className="lg:col-start-1 lg:row-start-3 text-white">
-    <BuildingInv v-if="playerSettings.faction.name" :units="this.units" />
+    <BuildingInv v-if="playerSettings.faction.name" :units="this.units" @delete="deleteUnit" />
   </div>
 
   <section id="Civ, buy tile, found city and level city section" className="lg:col-start-1 lg:row-start-4 flex flex-col gap-y-8">
@@ -163,12 +164,12 @@
 
         <h2 class="text-2xl text-white">Capital</h2>
         <div class="flex space-x-5 mb-5">
-          <span class="text-xl text-white">Capital population</span>
-          <h3 class="text-xl text-white">Capital name</h3>
+          <span class="text-xl text-white">{{capital.population}}</span>
+          <h3 class="text-xl text-white">{{capital.name}}</h3>
         </div> 
 
         <h2 class="text-2xl text-white">Cities</h2>
-            <City v-for="city in cities" :name="city.name" :population="city.population" :level="city.levelUpCost" @lvl-city="cityLevelUp" />
+            <City v-for="city in cities" :name="city.name" :population="city.population" :id="city.id" :level="city.levelUpCost" @lvl-city="cityLevelUp" @destroy-city="destroyCity" />
         </div>
         </el-tab-pane>
         <el-tab-pane label="Additional">
@@ -177,6 +178,13 @@
               class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
             >
               Plunder
+          </button>
+          <button
+              v-if="playerSettings.faction.name"
+              class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+              @click="getRich"
+            >
+              Get rick quick
           </button>
         </el-tab-pane>
     </el-tabs>
@@ -205,6 +213,10 @@ export default {
         { type: "Gold", amount: 5, modifier: 1 },
         { type: "Stone", amount: 5, modifier: 1 },
       ],
+      capital: {
+        name: 'Ayo',
+        population: 1,
+      },
       factions: [
         {
           name: "The Caws",
@@ -306,7 +318,7 @@ their eyes are only on the forests around them.`,
       ],
       playerSettings: {
         faction: { name: "", color: "", special: "", tiles: 0 },
-        population: 0,
+        population: this.totalPopulation,
         tiles: 0,
       },
       levelUpCost: 5,
@@ -425,13 +437,80 @@ their eyes are only on the forests around them.`,
           stoneCost: 150,
         },
       ],
-      units: ["Warrior"],
-      cities: [
-        { name: "Duckstad",
-      population: 1,
-    levelUpCost: 5,}
-      ],
-      cityNames: ["Owuocok", "Eflark", "Ezeoplarc", "Okrens", "Axathe", "Ejeiksea", "Duckstad", "Uprathe", "Oteahgas", "Ifluudille", "Hylia", "Eyrane", "Resembool", "Steelbarrow"],
+      units: [{name: 'Warrior', title: 'Sjors', id: this.generateRandomId(8)}],
+      cities: [],
+      cityNames: ["Owuocok", "Eflark", "Ezeoplarc", "Okrens", "Axathe", "Ejeiksea", "Duckstad", "Uprathe", "Oteahgas", "Ifluudille", "Hylia", "Eyrane", "Resembool", "Steelbarrow", "Eldrida",
+  "Ravenhold",
+  "Dunmere",
+  "Kingsreach",
+  "Frosthold",
+  "Wolfswood",
+  "Stormhaven",
+  "Dragonfall",
+  "Blackwater",
+  "Silvershire",
+  "Greenhaven",
+  "Stonewall",
+  "Moonstone",
+  "Ironwood",
+  "Goldcrest",
+  "Crownsguard",
+  "Ravenwood",
+  "Whiterun",
+  "Winterfell",
+  "Dragonstone",
+  "Riverrun",
+  "The Twins",
+  "Highgarden",
+  "Casterly Rock",
+  "Storm's End",
+  "Pyke",
+  "Oldtown",
+  "Braavos",
+  "Meereen",
+  "Volantis",
+  "Qarth",
+  "Astapor",
+  "Lys",
+  "Tyrosh",
+  "Pentos",
+  "Baldur's Gate",
+  "Waterdeep",
+  "Neverwinter",
+  "Icewind Dale",
+  "Sharn",
+  "Stormreach",
+  "Korthos",
+  "Eveningstar",
+  "Cormyr",
+  "Sembia",
+  "Thay",
+  "Amn",
+  "Calimshan",
+  "Zakhara",
+  "Al-Qadim"],
+      unitNames: [
+                    "William",
+                    "Richard",
+                    "Henry",
+                    "Edward",
+                    "John",
+                    "Robert",
+                    "Thomas",
+                    "Geoffrey",
+                    "Roger",
+                    "Stephen",
+                    "Philip",
+                    "Walter",
+                    "Gilbert",
+                    "Bartholomew",
+                    "Simon",
+                    "Godfrey",
+                    "Baldwin",
+                    "Hugh",
+                    "Alan",
+                    "Reginald"
+                  ],
       unitsOwned: 1,
       turn: 1,
     };
@@ -445,13 +524,19 @@ their eyes are only on the forests around them.`,
     getResources() {
       return this.resources;
     },
+    totalPopulation() {
+      let totalPopulation = this.capital.population; // initialize total population to 0
+  for (let i = 0; i < this.cities.length; i++) {
+    totalPopulation += this.cities[i].population; // add the population of each city to the total population
+  }
+  return totalPopulation;
+}
   },
   methods: {
     addResources() {
       for (let i = 0; i < this.resources.length; i++) {
         this.resources[i].amount += this.resources[i].modifier;
       }
-      console.log(uuid.v4())
       this.turn += 1;
     },
     buyUnit(food, wood, gold, stone, type) {
@@ -459,15 +544,16 @@ their eyes are only on the forests around them.`,
       let currentWood = this.resources[1].amount;
       let currentGold = this.resources[2].amount;
       let currentStone = this.resources[3].amount;
+      const randomUnitName = this.unitNames[Math.floor(Math.random() * this.cityNames.length)];
 
-      if (this.playerSettings.population > this.unitsOwned) {
+      if (this.totalPopulation > this.unitsOwned) {
         if (
           currentFood >= food &&
           currentWood >= wood &&
           currentGold >= gold &&
           currentStone >= stone
         ) {
-          this.units.push(type);
+          this.units.push({name: type, title: randomUnitName, id: this.generateRandomId(8)});
           this.resources[0].amount = currentFood - food;
           this.resources[1].amount -= wood;
           this.resources[2].amount -= gold;
@@ -479,6 +565,14 @@ their eyes are only on the forests around them.`,
       } else {
         this.showUnitAlert();
       }
+    },
+    generateRandomId(length) {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      return result;
     },
     levelUp() {
       let baseCost = 8;
@@ -499,16 +593,22 @@ their eyes are only on the forests around them.`,
           this.levelUpCost = this.levelUpCost + baseCost;
         }
 
-        this.playerSettings.population++;
+        this.capital.population++;
         if (this.playerSettings.faction.name == "The Whoolies") {
-          this.playerSettings.population++;
+          this.capital.population++;
         }
       } else {
         this.showAlert();
       }
     },
-    cityLevelUp(name){
-      const currentCity = this.cities.filter(city => city.name == name);
+    getRich(){
+      this.resources[0].amount = 9999;
+          this.resources[1].amount = 9999;
+          this.resources[2].amount = 9999;
+          this.resources[3].amount = 9999;
+    },
+    cityLevelUp(id){
+      const currentCity = this.cities.filter(city => city.id == id);
       const baseCost = 8;
       if (this.resources[0].amount >= currentCity[0].levelUpCost) {
         if (currentCity.population <= 1) {
@@ -543,14 +643,17 @@ their eyes are only on the forests around them.`,
     },
     foundCity() {
       const randomCityName = this.cityNames[Math.floor(Math.random() * this.cityNames.length)];
-      if (this.units.includes("Settler")) {
+
+      const settlerIndex = this.units.findIndex((unit) => unit.name === "Settler");
+
+      if (settlerIndex !== -1) {
         this.resources[0].modifier++;
         this.resources[1].modifier++;
         this.resources[2].modifier++;
         this.resources[3].modifier++;
         this.playerSettings.population++;
-        this.units = this.units.filter((element) => element != "Settler");
-        this.cities.push({name: randomCityName, population: 1, levelUpCost: 5})
+        this.units.splice(settlerIndex, 1);
+        this.cities.push({name: randomCityName, id: this.generateRandomId(8), population: 1, levelUpCost: 5});
       } else {
         this.$swal("You do not own a settler");
       }
@@ -589,7 +692,7 @@ their eyes are only on the forests around them.`,
         } else if (type == "Mine") {
           this.resources[3].modifier++;
         }
-        this.units.push(type);
+        this.units.push({name: type, title: type, id: this.generateRandomId(8)});
         this.resources[0].amount = currentFood - food;
         this.resources[1].amount -= wood;
         this.resources[2].amount -= gold;
@@ -598,8 +701,76 @@ their eyes are only on the forests around them.`,
         this.showAlert();
       }
     },
-    deleteUnit(unit){
-      this.units = this.units.filter((element) => element != unit);
+    buySpecial(name){
+      const randomUnitName = this.unitNames[Math.floor(Math.random() * this.cityNames.length)];
+      if(this.unitsOwned < this.totalPopulation) {
+        if(name == "The Caws" && this.resources[0].amount >= 1 &&
+        this.resources[1].amount >= 2 &&
+        this.resources[2].amount >= 5 &&
+        this.resources[3].amount >= 0) {
+        this.resources[0].amount -= 1;
+        this.resources[1].amount -= 2;
+        this.resources[2].amount -= 5;
+        this.resources[3].amount -= 0;
+        this.units.push({name: 'SpCaw', title: randomUnitName, id: this.generateRandomId(8)});
+      } else if (name == "The Devils" && this.resources[0].amount >= 5 &&
+        this.resources[1].amount >= 2&&
+        this.resources[2].amount >= 0&&
+        this.resources[3].amount >= 1) {
+        this.resources[0].amount -= 5;
+        this.resources[1].amount -= 2;
+        this.resources[2].amount -= 0;
+        this.resources[3].amount -= 1;
+        this.units.push({name: 'SpDevil', title: randomUnitName, id: this.generateRandomId(8)});
+      } else if(name == "The Whoolies" && this.resources[0].amount >= 3 &&
+        this.resources[1].amount >= 2 &&
+        this.resources[2].amount >= 3 &&
+        this.resources[3].amount >= 0) {
+        this.resources[0].amount -= 3;
+        this.resources[1].amount -= 2;
+        this.resources[2].amount -= 3;
+        this.resources[3].amount -= 0;
+        this.units.push({name: 'SpWhool', title: randomUnitName, id: this.generateRandomId(8)});
+      } else if(name == "The Crunchers" && this.resources[0].amount >= 2 &&
+        this.resources[1].amount >= 4 &&
+        this.resources[2].amount >= 0 &&
+        this.resources[3].amount >= 2){
+        this.resources[0].amount -= 2;
+        this.resources[1].amount -= 4;
+        this.resources[2].amount -= 0;
+        this.resources[3].amount -= 2;
+        this.units.push({name: 'SpCrunch', title: randomUnitName, id: this.generateRandomId(8)});
+      } else {
+        this.showAlert();
+      }
+      } else {
+        this.showUnitAlert()
+      }
+    },
+    destroyCity(cityId){
+      this.cities = this.cities.filter(city => city.id != cityId);
+    },
+    deleteUnit(unitId){
+      const foundUnit = this.units.filter(unit => unit.id == unitId);
+
+      if(foundUnit[0].name == "Farm") {
+        this.resources[0].modifier--;
+        if (this.playerSettings.faction.name == "The Devils") {
+            this.resources[0].modifier--;
+          }
+      } else if(foundUnit[0].name == "Lumberyard") {
+
+        this.resources[1].modifier--;
+        } else if (foundUnit[0].name == "Market") {
+          this.resources[2].modifier--;
+          if (this.playerSettings.faction.name == "The Caws") {
+            this.resources[2].modifier--;
+          }
+        } else if (foundUnit[0].name == "Mine") {
+          this.resources[3].modifier--;
+        }
+      this.units = this.units.filter(unit => unit.id != unitId);
+      this.unitsOwned--;
     },
     toggleAlert() {
       this.noResources = !this.noResources;
