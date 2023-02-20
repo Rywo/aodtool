@@ -43,6 +43,10 @@ export default {
       type: String,
       required: true,
     },
+    capital: {
+      type: String,
+      required: true,
+    },
     special: {
       type: String,
       required: true,
@@ -64,7 +68,7 @@ export default {
   },
   methods: {
     pickFaction() {
-      this.$emit("pick-faction", this.name, this.color, this.special);
+      this.$emit("pick-faction", this.name, this.color, this.special, this.capital);
     },
   },
 };
