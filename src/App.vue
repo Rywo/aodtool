@@ -920,36 +920,43 @@ their eyes are only on the forests around them.`,
     destroyCity(cityId) {
       this.cities = this.cities.filter((city) => city.id != cityId);
     },
-    plunder(building, type){
-      if( building == 'Normal' && type == 'plunder') {
-        this.resources[0].amount += 1;
-          this.resources[1].amount += 1;
-          this.resources[2].amount += 1;
-          this.resources[3].amount += 1;
-      } else if ( building == "Normal" && type == "plundered") {
-        this.resources[0].amount -= 1;
-          this.resources[1].amount -= 1;
-          this.resources[2].amount -= 1;
-          this.resources[3].amount -= 1;
-      } else if (building == 'Market' && type == "plunder"){
-        this.resources[2].amount += 3;
-      } else if (building == 'Market' && type == "plundered"){
-        this.resources[2].amount -= 3;
-      } else if (building == 'Mine' && type == "plunder"){
-        this.resources[3].amount += 3;
-      }else if (building == 'Mine' && type == "plundered"){
-        this.resources[3].amount -= 3;
-      } else if (building == 'Farm' && type == "plunder"){
-        this.resources[0].amount += 3;
-      } else if (building == 'Farm' && type == "plundered"){
-        this.resources[0].amount -= 3;
-      } else if (building == 'Lumberyard' && type == "plunder"){
-        this.resources[1].amount += 3;
-      }else if (building == 'Lumberyard' && type == "plundered"){
-        this.resources[1].amount -= 3;
-      }
-      
-    },
+    plunder(building, type) {
+  let resources;
+  let amount;
+
+  switch (building) {
+    case 'Farm':
+      resources = [this.resources[0]];
+      amount = 3;
+      break;
+    case 'Lumberyard':
+      resources = [this.resources[1]];
+      amount = 3;
+      break;
+    case 'Market':
+      resources = [this.resources[2]];
+      amount = 3;
+      break;
+    case 'Mine':
+      resources = [this.resources[3]];
+      amount = 3;
+      break;
+    case 'Normal':
+      resources = this.resources;
+      amount = 1;
+      break;
+    default:
+      return; // invalid building type, do nothing
+  }
+
+  resources.forEach(resource => {
+    if (type === 'plunder') {
+      resource.amount += amount;
+    } else if (type === 'plundered') {
+      resource.amount -= amount;
+    }
+  });
+},
     deleteUnit(unitId) {
       const foundUnit = this.units.filter((unit) => unit.id == unitId);
       const isBuilding = this.units.some((unit) => {
