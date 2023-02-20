@@ -207,19 +207,89 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="Additional">
-          <button
+          <div class="grid lg:grid-cols-3 2xl:grid-cols-5 w-max gap-4 mt-8">
+            <button
             v-if="playerSettings.faction.name"
             class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Normal', 'plunder')"
           >
             Plunder
           </button>
+
           <button
             v-if="playerSettings.faction.name"
             class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
-            @click="getRich"
+            @click="plunder('Farm', 'plunder')"
           >
-            Get rick quick
+            Plunder Farm
           </button>
+
+          <button
+            v-if="playerSettings.faction.name"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Mine', 'plunder')"
+          >
+            Plunder Mine
+          </button>
+
+          <button
+            v-if="playerSettings.faction.name"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Lumberyard', 'plunder')"
+          >
+            Plunder Lumberyard
+          </button>
+
+          <button
+            v-if="playerSettings.faction.name"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Market', 'plunder')"
+          >
+            Plunder Market
+          </button>
+
+          <button
+            v-if="playerSettings.faction.name"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Normal', 'plundered')"
+          >
+            Plundered
+          </button>
+
+          <button
+            v-if="playerSettings.faction.name"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Farm', 'plundered')"
+            
+          >
+            Plundered Farm
+          </button>
+
+          <button
+            v-if="playerSettings.faction.name"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Mine', 'plundered')"
+          >
+            Plundered Mine
+          </button>
+
+          <button
+            v-if="playerSettings.faction.name"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Lumberyard', 'plundered')"
+          >
+            Plundered Lumberyard
+          </button>
+
+          <button
+            v-if="playerSettings.faction.name"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="plunder('Market', 'plundered')"
+          >
+            Plundered Market
+          </button>
+
+          </div>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -849,6 +919,36 @@ their eyes are only on the forests around them.`,
     },
     destroyCity(cityId) {
       this.cities = this.cities.filter((city) => city.id != cityId);
+    },
+    plunder(building, type){
+      if( building == 'Normal' && type == 'plunder') {
+        this.resources[0].amount += 1;
+          this.resources[1].amount += 1;
+          this.resources[2].amount += 1;
+          this.resources[3].amount += 1;
+      } else if ( building == "Normal" && type == "plundered") {
+        this.resources[0].amount -= 1;
+          this.resources[1].amount -= 1;
+          this.resources[2].amount -= 1;
+          this.resources[3].amount -= 1;
+      } else if (building == 'Market' && type == "plunder"){
+        this.resources[2].amount += 3;
+      } else if (building == 'Market' && type == "plundered"){
+        this.resources[2].amount -= 3;
+      } else if (building == 'Mine' && type == "plunder"){
+        this.resources[3].amount += 3;
+      }else if (building == 'Mine' && type == "plundered"){
+        this.resources[3].amount -= 3;
+      } else if (building == 'Farm' && type == "plunder"){
+        this.resources[0].amount += 3;
+      } else if (building == 'Farm' && type == "plundered"){
+        this.resources[0].amount -= 3;
+      } else if (building == 'Lumberyard' && type == "plunder"){
+        this.resources[1].amount += 3;
+      }else if (building == 'Lumberyard' && type == "plundered"){
+        this.resources[1].amount -= 3;
+      }
+      
     },
     deleteUnit(unitId) {
       const foundUnit = this.units.filter((unit) => unit.id == unitId);
