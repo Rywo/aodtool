@@ -1,9 +1,9 @@
 <template>
   <main
     id="completewrapper"
-    className="grid lg:grid-cols-4 gap-y-12 gap-x-8 2xl:max-w-[1536px] 2xl:mx-auto"
+    className="grid lg:grid-cols-4 gap-y-12 gap-x-8 2xl:max-w-[1536px] 2xl:mx-auto my-8"
   >
-    <section ID="factionselector" className="lg:col-span-4 flex mx-auto">
+    <section ID="factionselector" className=" lg:row-start-1 lg:col-span-4 flex mx-auto">
       <div v-if="playerSettings.faction.name == 0">
         <h1 class="text-white">Choose your faction</h1>
         <Factions
@@ -186,15 +186,17 @@
             />
           </div>
         </el-tab-pane>
+
+
         <el-tab-pane label="Cities">
-          <div class="px-2 py-3 rounded-xl bg-slate-600/50 shadow-md">
-            <h2 class="text-2xl text-white">Capital</h2>
+          <div class="p-8 rounded-xl bg-slate-600/50 shadow-md">
+            <h2 class="text-2xl text-white text-left mb-4">Capital</h2>
             <div class="flex space-x-5 mb-5">
               <span class="text-xl text-white">{{ capital.population }}</span>
               <h3 class="text-xl text-white">{{ capital.name }}</h3>
             </div>
 
-            <h2 class="text-2xl text-white">Cities</h2>
+            <h2 class="text-2xl text-white text-left mb-4">Cities</h2>
             <City
               v-for="(city, idx) in cities"
               :key="idx"
@@ -208,10 +210,12 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="Additional">
-          <div class="grid lg:grid-cols-3 2xl:grid-cols-5 w-max gap-4 mt-8">
+          <div className="p-8 rounded-xl bg-slate-600/50 shadow-md">
+          <h2 class="text-2xl text-white text-left mb-4">Attack others</h2>
+          <div class="grid lg:grid-cols-3 2xl:grid-cols-5 w-full gap-4">
             <button
             v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
             @click="plunder('Normal', 'plunder')"
           >
             Plunder
@@ -219,7 +223,7 @@
 
           <button
             v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
             @click="plunder('Farm', 'plunder')"
           >
             Plunder Farm
@@ -227,7 +231,7 @@
 
           <button
             v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
             @click="plunder('Mine', 'plunder')"
           >
             Plunder Mine
@@ -235,7 +239,7 @@
 
           <button
             v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
             @click="plunder('Lumberyard', 'plunder')"
           >
             Plunder Lumberyard
@@ -243,15 +247,19 @@
 
           <button
             v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
             @click="plunder('Market', 'plunder')"
           >
             Plunder Market
           </button>
-
+         
+          </div>
+          <h2 class="text-2xl text-white text-left mt-8 mb-4">Getting attacked</h2>
+          
+          <div class="grid w-full lg:grid-cols-3 2xl:grid-cols-5 gap-4">
           <button
             v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
             @click="plunder('Normal', 'plundered')"
           >
             Plundered
@@ -259,11 +267,13 @@
 
           <button
             v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
             @click="plunder('Farm', 'plundered')"
             
           >
-            Plundered Farm
+            Plundered 
+            <br>
+            Farm
           </button>
 
           <button
@@ -271,7 +281,9 @@
             class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
             @click="plunder('Mine', 'plundered')"
           >
-            Plundered Mine
+            Plundered
+            <br>
+            Mine
           </button>
 
           <button
@@ -279,7 +291,9 @@
             class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
             @click="plunder('Lumberyard', 'plundered')"
           >
-            Plundered Lumberyard
+            Plundered
+            <br>
+            Lumberyard
           </button>
 
           <button
@@ -287,10 +301,13 @@
             class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
             @click="plunder('Market', 'plundered')"
           >
-            Plundered Market
+            Plundered
+            <br>
+            Market
           </button>
 
           </div>
+        </div>
         </el-tab-pane>
       </el-tabs>
     </div>
