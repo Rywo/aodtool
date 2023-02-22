@@ -3,7 +3,10 @@
     id="completewrapper"
     className="grid lg:grid-cols-4 gap-y-12 gap-x-8 2xl:max-w-[1536px] 2xl:mx-auto my-8"
   >
-    <section ID="factionselector" className=" lg:row-start-1 lg:col-span-4 flex mx-auto">
+    <section
+      ID="factionselector"
+      className=" lg:row-start-1 lg:col-span-4 flex mx-auto"
+    >
       <div v-if="playerSettings.faction.name == 0">
         <h1 class="text-white">Choose your faction</h1>
         <Factions
@@ -187,13 +190,14 @@
           </div>
         </el-tab-pane>
 
-
         <el-tab-pane label="Cities">
           <div class="p-8 rounded-xl bg-slate-600/50 shadow-md">
             <h2 class="text-2xl text-white text-left mb-4">Capital</h2>
             <div class="flex space-x-5 mb-5">
               <span class="text-xl text-white">{{ capital.population }}</span>
               <h3 class="text-xl text-white">{{ capital.name }}</h3>
+
+              <button @click="destroyCapital">Destroy</button>
             </div>
 
             <h2 class="text-2xl text-white text-left mb-4">Cities</h2>
@@ -211,103 +215,110 @@
         </el-tab-pane>
         <el-tab-pane label="Additional">
           <div className="p-8 rounded-xl bg-slate-600/50 shadow-md">
-          <h2 class="text-2xl text-white text-left mb-4">Attack others</h2>
-          <div class="grid lg:grid-cols-3 2xl:grid-cols-5 w-full gap-4">
-            <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
-            @click="plunder('Normal', 'plunder')"
-          >
-            Plunder
-          </button>
+            <h2 class="text-2xl text-white text-left mb-4">Attack others</h2>
+            <div class="grid lg:grid-cols-3 2xl:grid-cols-5 w-full gap-4">
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="plunder('Normal', 'plunder')"
+              >
+                Plunder
+              </button>
 
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
-            @click="plunder('Farm', 'plunder')"
-          >
-            Plunder Farm
-          </button>
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="plunder('Farm', 'plunder')"
+              >
+                Plunder Farm
+              </button>
 
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
-            @click="plunder('Mine', 'plunder')"
-          >
-            Plunder Mine
-          </button>
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="plunder('Mine', 'plunder')"
+              >
+                Plunder Mine
+              </button>
 
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
-            @click="plunder('Lumberyard', 'plunder')"
-          >
-            Plunder Lumberyard
-          </button>
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="plunder('Lumberyard', 'plunder')"
+              >
+                Plunder Lumberyard
+              </button>
 
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
-            @click="plunder('Market', 'plunder')"
-          >
-            Plunder Market
-          </button>
-         
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="plunder('Market', 'plunder')"
+              >
+                Plunder Market
+              </button>
+            </div>
+            <h2 class="text-2xl text-white text-left mt-8 mb-4">
+              Getting attacked
+            </h2>
+
+            <div class="grid w-full lg:grid-cols-3 2xl:grid-cols-5 gap-4">
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="plunder('Normal', 'plundered')"
+              >
+                Plundered
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="plunder('Farm', 'plundered')"
+              >
+                Plundered
+                <br />
+                Farm
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+                @click="plunder('Mine', 'plundered')"
+              >
+                Plundered
+                <br />
+                Mine
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+                @click="plunder('Lumberyard', 'plundered')"
+              >
+                Plundered
+                <br />
+                Lumberyard
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+                @click="plunder('Market', 'plundered')"
+              >
+                Plundered
+                <br />
+                Market
+              </button>
+            </div>
+
+             <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+                @click="getRich"
+              >
+                Get rich quick
+              </button>
           </div>
-          <h2 class="text-2xl text-white text-left mt-8 mb-4">Getting attacked</h2>
-          
-          <div class="grid w-full lg:grid-cols-3 2xl:grid-cols-5 gap-4">
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
-            @click="plunder('Normal', 'plundered')"
-          >
-            Plundered
-          </button>
-
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
-            @click="plunder('Farm', 'plundered')"
-            
-          >
-            Plundered 
-            <br>
-            Farm
-          </button>
-
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
-            @click="plunder('Mine', 'plundered')"
-          >
-            Plundered
-            <br>
-            Mine
-          </button>
-
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
-            @click="plunder('Lumberyard', 'plundered')"
-          >
-            Plundered
-            <br>
-            Lumberyard
-          </button>
-
-          <button
-            v-if="playerSettings.faction.name"
-            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
-            @click="plunder('Market', 'plundered')"
-          >
-            Plundered
-            <br>
-            Market
-          </button>
-
-          </div>
-        </div>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -391,18 +402,18 @@ their eyes are only on the forests around them.`,
             { name: "Wood oriented", kind: "warning" },
           ],
         },
-//         {
-//           name: "The Waterwaddlers",
-//           special:
-//             "Passive: Able to use fish invested water as natural bridges",
-//           desc: `A faction consisting of otter like creatures that treat the water the same as land, as long as it’s shallow enough.
-// focussed on movement and watermobility`,
-//           color: "lightblue",
-//           tags: [
-//             { name: "All-rounded", kind: "danger" },
-//             { name: "Mobility focussed", kind: "warning" },
-//           ],
-//         },
+        //         {
+        //           name: "The Waterwaddlers",
+        //           special:
+        //             "Passive: Able to use fish invested water as natural bridges",
+        //           desc: `A faction consisting of otter like creatures that treat the water the same as land, as long as it’s shallow enough.
+        // focussed on movement and watermobility`,
+        //           color: "lightblue",
+        //           tags: [
+        //             { name: "All-rounded", kind: "danger" },
+        //             { name: "Mobility focussed", kind: "warning" },
+        //           ],
+        //         },
       ],
       soldiers: [
         {
@@ -825,6 +836,7 @@ their eyes are only on the forests around them.`,
           population: 1,
           levelUpCost: 5,
         });
+        this.unitsOwned--;
       } else {
         this.$swal("You do not own a settler");
       }
@@ -954,43 +966,53 @@ their eyes are only on the forests around them.`,
     destroyCity(cityId) {
       this.cities = this.cities.filter((city) => city.id != cityId);
     },
+    destroyCapital() {
+      this.capital.name = this.cities[0].name;
+      this.capital.population = this.cities[0].population;
+      this.levelUpCost = this.cities[0].levelUpCost;
+      this.cities.splice(0, 1);
+      this.resources[0].modifier--;
+      this.resources[1].modifier--;
+      this.resources[2].modifier--;
+      this.resources[3].modifier--;
+    },
     plunder(building, type) {
-  let resources;
-  let amount;
+      let resources;
+      let amount;
 
-  switch (building) {
-    case 'Farm':
-      resources = [this.resources[0]];
-      amount = 3;
-      break;
-    case 'Lumberyard':
-      resources = [this.resources[1]];
-      amount = 3;
-      break;
-    case 'Market':
-      resources = [this.resources[2]];
-      amount = 3;
-      break;
-    case 'Mine':
-      resources = [this.resources[3]];
-      amount = 3;
-      break;
-    case 'Normal':
-      resources = this.resources;
-      amount = 1;
-      break;
-    default:
-      return; // invalid building type, do nothing
-  }
+      switch (building) {
+        case "Farm":
+          resources = [this.resources[0]];
+          amount = 3;
+          break;
+        case "Lumberyard":
+          resources = [this.resources[1]];
+          amount = 3;
+          break;
+        case "Market":
+          resources = [this.resources[2]];
+          amount = 3;
+          break;
+        case "Mine":
+          resources = [this.resources[3]];
+          amount = 3;
+          break;
+        case "Normal":
+          resources = this.resources;
+          amount = 1;
+          break;
+        default:
+          return; // invalid building type, do nothing
+      }
 
-  resources.forEach(resource => {
-    if (type === 'plunder') {
-      resource.amount += amount;
-    } else if (type === 'plundered') {
-      resource.amount -= amount;
-    }
-  });
-},
+      resources.forEach((resource) => {
+        if (type === "plunder") {
+          resource.amount += amount;
+        } else if (type === "plundered") {
+          resource.amount -= amount;
+        }
+      });
+    },
     deleteUnit(unitId) {
       const foundUnit = this.units.filter((unit) => unit.id == unitId);
       const isBuilding = this.units.some((unit) => {
