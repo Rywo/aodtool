@@ -175,7 +175,7 @@
             /></div
         ></el-tab-pane>
         <el-tab-pane label="Units">
-          <div class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max gap-4 mt-8">
+          <div class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8">
             <Building
               v-for="soldier in soldiers"
               :key="soldier.type"
