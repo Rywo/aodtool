@@ -310,14 +310,14 @@
                 Market
               </button>
             </div>
-
+<!-- 
              <button
                 v-if="playerSettings.faction.name"
                 class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
                 @click="getRich"
               >
                 Get rich quick
-              </button>
+              </button> -->
           </div>
         </el-tab-pane>
       </el-tabs>
