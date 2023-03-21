@@ -35,16 +35,7 @@
         className="lg:fixed lg:left-[50%] z-10 lg:transform lg:-translate-x-[50%] flex flex-col lg:flex-row gap-y-4 lg:gap-x-2 xl:gap-x-5"
       >
         <div
-          class="
-            flex flex-col
-            w-full
-            lg:flex-row
-            gap-y-4
-            lg:space-x-2
-            2xl:space-x-5
-            justify-center
-            text-white
-          "
+          class="flex flex-col w-full lg:flex-row gap-y-4 lg:space-x-2 2xl:space-x-5 justify-center text-white"
         >
           <Resources
             v-for="resource in resources"
@@ -74,6 +65,11 @@
       id="playerinfobox"
       className="lg:col-start-1 lg:row-start-2 flex flex-col gap-y-8"
     >
+      <span
+        v-if="playerSettings.faction.name"
+        class="text-3xl font-bold text-white"
+        >Current age: {{ age }}</span
+      >
       <span
         v-if="playerSettings.faction.name"
         class="text-2xl font-bold text-white"
@@ -125,7 +121,13 @@
             Buy tile ({{ this.tileCost }})
           </button>
         </div>
-
+        <button
+          v-if="playerSettings.faction.name"
+          class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+          @click="ageUp"
+        >
+          Age faction
+        </button>
         <button
           v-if="playerSettings.faction.name"
           class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
@@ -138,7 +140,7 @@
           class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
           @click="levelUp"
         >
-          Level up ({{ this.levelUpCost }} gold)
+          Level up ({{ this.levelUpCost }} food)
         </button>
       </section>
     </section>
@@ -152,18 +154,10 @@
       <el-tabs type="border-card">
         <el-tab-pane label="Buildings">
           <div
-            class="
-              grid
-              lg:grid-cols-3
-              2xl:grid-cols-4
-              w-max
-              lg:w-full
-              gap-4
-              mt-4
-            "
+            class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-4"
           >
             <Building
-              v-for="building in buildings"
+              v-for="building in filteredBuildings"
               :key="building.type"
               :type="building.type"
               :subject="building.subject"
@@ -171,13 +165,17 @@
               :wood-cost="building.woodCost"
               :gold-cost="building.goldCost"
               :stone-cost="building.stoneCost"
+              :age="building.age"
+              :need-builder="building.needBuilder"
               @buy-building="buyBuilding"
             /></div
         ></el-tab-pane>
         <el-tab-pane label="Units">
-          <div class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8">
+          <div
+            class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
+          >
             <Building
-              v-for="soldier in soldiers"
+              v-for="soldier in soldiers.filter((s) => s.age == this.age)"
               :key="soldier.type"
               :type="soldier.type"
               :subject="soldier.subject"
@@ -185,6 +183,8 @@
               :wood-cost="soldier.woodCost"
               :gold-cost="soldier.goldCost"
               :stone-cost="soldier.stoneCost"
+              :age="soldier.age"
+              :need-builder="soldier.needBuilder"
               @buy-building="buyUnit"
             />
           </div>
@@ -210,6 +210,25 @@
               :level="city.levelUpCost"
               @lvl-city="cityLevelUp"
               @destroy-city="destroyCity"
+            />
+          </div>
+        </el-tab-pane>
+        <el-tab-pane label="Upgrades">
+          <div
+            class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
+          >
+            <Building
+              v-for="upgrade in upgrades.filter((s) => s.age == this.age)"
+              :key="upgrade.type"
+              :type="upgrade.type"
+              :subject="upgrade.subject"
+              :food-cost="upgrade.foodCost"
+              :wood-cost="upgrade.woodCost"
+              :gold-cost="upgrade.goldCost"
+              :stone-cost="upgrade.stoneCost"
+              :age="upgrade.age"
+              :need-builder="upgrade.needBuilder"
+              @buy-building="buyUpgrade"
             />
           </div>
         </el-tab-pane>
@@ -310,7 +329,7 @@
                 Market
               </button>
             </div>
-<!-- 
+            <!-- 
              <button
                 v-if="playerSettings.faction.name"
                 class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
@@ -423,6 +442,8 @@ their eyes are only on the forests around them.`,
           woodCost: 1,
           goldCost: 0,
           stoneCost: 1,
+          needBuilder: false,
+          age: 1,
         },
         {
           type: "Scout",
@@ -431,6 +452,8 @@ their eyes are only on the forests around them.`,
           woodCost: 1,
           goldCost: 0,
           stoneCost: 1,
+          needBuilder: false,
+          age: 2,
         },
         {
           type: "Archer",
@@ -439,6 +462,8 @@ their eyes are only on the forests around them.`,
           woodCost: 2,
           goldCost: 0,
           stoneCost: 1,
+          needBuilder: false,
+          age: 2,
         },
         {
           type: "Priest",
@@ -447,6 +472,8 @@ their eyes are only on the forests around them.`,
           woodCost: 1,
           goldCost: 0,
           stoneCost: 0,
+          needBuilder: false,
+          age: 2,
         },
         {
           type: "Settler",
@@ -455,6 +482,8 @@ their eyes are only on the forests around them.`,
           woodCost: 15,
           goldCost: 15,
           stoneCost: 15,
+          needBuilder: false,
+          age: 2,
         },
         {
           type: "Builder",
@@ -463,6 +492,8 @@ their eyes are only on the forests around them.`,
           woodCost: 0,
           goldCost: 0,
           stoneCost: 0,
+          needBuilder: false,
+          age: 2,
         },
       ],
       playerSettings: {
@@ -479,6 +510,8 @@ their eyes are only on the forests around them.`,
           woodCost: 1,
           goldCost: 0,
           stoneCost: 2,
+          needBuilder: false,
+          age: 1,
         },
         {
           type: "Mine",
@@ -487,6 +520,8 @@ their eyes are only on the forests around them.`,
           woodCost: 2,
           goldCost: 0,
           stoneCost: 4,
+          needBuilder: false,
+          age: 1,
         },
         {
           type: "Market",
@@ -495,6 +530,8 @@ their eyes are only on the forests around them.`,
           woodCost: 1,
           goldCost: 5,
           stoneCost: 1,
+          needBuilder: false,
+          age: 1,
         },
         {
           type: "Lumberyard",
@@ -503,6 +540,8 @@ their eyes are only on the forests around them.`,
           woodCost: 4,
           goldCost: 0,
           stoneCost: 1,
+          needBuilder: false,
+          age: 1,
         },
         {
           type: "Fishery",
@@ -521,21 +560,27 @@ their eyes are only on the forests around them.`,
           goldCost: 3,
           stoneCost: 3,
         },
+        // check value
         {
           type: "Bridge",
           subject: "Reduces movement of units by -1",
           foodCost: 0,
           woodCost: 4,
           goldCost: 0,
-          stoneCost: 4,
+          stoneCost: 8,
+          needBuilder: true,
+          age: 2,
         },
+          // check value
         {
           type: "Housing",
           subject: "+1 population",
           foodCost: 2,
           woodCost: 3,
           goldCost: 0,
-          stoneCost: 3,
+          stoneCost: 7,
+          needBuilder: true,
+          age: 2,
         },
         {
           type: "Road",
@@ -544,6 +589,8 @@ their eyes are only on the forests around them.`,
           woodCost: 0,
           goldCost: 1,
           stoneCost: 8,
+          needBuilder: true,
+          age: 2,
         },
         {
           type: "Watchtower",
@@ -552,6 +599,8 @@ their eyes are only on the forests around them.`,
           woodCost: 4,
           goldCost: 0,
           stoneCost: 4,
+          needBuilder: true,
+          age: 2,
         },
         {
           type: "Barracks",
@@ -560,6 +609,8 @@ their eyes are only on the forests around them.`,
           woodCost: 4,
           goldCost: 0,
           stoneCost: 3,
+          needBuilder: true,
+          age: 2,
         },
         {
           type: "Archery",
@@ -568,6 +619,8 @@ their eyes are only on the forests around them.`,
           woodCost: 3,
           goldCost: 0,
           stoneCost: 4,
+          needBuilder: true,
+          age: 2,
         },
         {
           type: "Outpost",
@@ -576,6 +629,8 @@ their eyes are only on the forests around them.`,
           woodCost: 2,
           goldCost: 0,
           stoneCost: 2,
+          needBuilder: true,
+          age: 2,
         },
         {
           type: "Church",
@@ -584,6 +639,19 @@ their eyes are only on the forests around them.`,
           woodCost: 3,
           goldCost: 1,
           stoneCost: 3,
+          needBuilder: true,
+          age: 2,
+        },
+          // check value
+        {
+          type: "Fishery",
+          subject: "+1 food (+1 gold if next to market)",
+          foodCost: 4,
+          woodCost: 8,
+          goldCost: 2,
+          stoneCost: 0,
+          needBuilder: true,
+          age: 3,
         },
         {
           type: "Wonder",
@@ -592,6 +660,20 @@ their eyes are only on the forests around them.`,
           woodCost: 150,
           goldCost: 150,
           stoneCost: 150,
+          needBuilder: true,
+          age: 3,
+        },
+      ],
+      upgrades: [
+        {
+          type: "Bronze pickaxe",
+          subject: "+1 stone",
+          foodCost: 8,
+          woodCost: 2,
+          goldCost: 0,
+          stoneCost: 4,
+          needBuilder: false,
+          age: 2,
         },
       ],
       units: [
@@ -688,6 +770,7 @@ their eyes are only on the forests around them.`,
       ],
       unitsOwned: 1,
       turn: 1,
+      age: 1,
     };
   },
   watch: {
@@ -699,6 +782,22 @@ their eyes are only on the forests around them.`,
     getResources() {
       return this.resources;
     },
+    filteredBuildings() {
+      const builderIndex = this.units.findIndex(
+        (unit) => unit.name === "Builder"
+      );
+      return this.buildings.filter((building) => {
+        // Filter based on age and needBuilder
+        if (
+          building.age <= this.age &&
+          (!building.needBuilder ||
+            (builderIndex !== -1 && building.needBuilder))
+        ) {
+          return true;
+        }
+        return false;
+      });
+    },
     totalPopulation() {
       let totalPopulation = this.capital.population; // initialize total population to 0
       for (let i = 0; i < this.cities.length; i++) {
@@ -708,11 +807,59 @@ their eyes are only on the forests around them.`,
     },
   },
   methods: {
+    ageUp() {
+      if (
+        this.age === 1 &&
+        this.resources[0].amount >= 10 &&
+        this.resources[1].amount >= 10 &&
+        this.resources[2].amount >= 10 &&
+        this.resources[3].amount >= 10
+      ) {
+        this.resources[0].amount -= 10;
+        this.resources[1].amount -= 10;
+        this.resources[2].amount -= 10;
+        this.resources[3].amount -= 10;
+        this.age++;
+      } else if (
+        this.age === 2 &&
+        this.resources[0].amount >= 30 &&
+        this.resources[1].amount >= 30 &&
+        this.resources[2].amount >= 30 &&
+        this.resources[3].amount >= 30
+      ) {
+        this.resources[0].amount -= 30;
+        this.resources[1].amount -= 30;
+        this.resources[2].amount -= 30;
+        this.resources[3].amount -= 30;
+        this.age++;
+      } else {
+        this.showAlert();
+      }
+    },
     addResources() {
       for (let i = 0; i < this.resources.length; i++) {
         this.resources[i].amount += this.resources[i].modifier;
       }
       this.turn += 1;
+    },
+    buyUpgrade(food, wood, gold, stone, type) {
+      const currentUpgrade = this.upgrades.find((u) => u.type === type);
+
+      //remove the resources
+      this.resources[0].amount -= food;
+      this.resources[1].amount -= wood;
+      this.resources[2].amount -= gold;
+      this.resources[3].amount -= stone;
+
+      //increase upgrade cost
+      if (currentUpgrade) {
+        currentUpgrade.foodCost = food * 2;
+        currentUpgrade.woodCost = wood * 2;
+        currentUpgrade.goldCost = gold * 2;
+        currentUpgrade.stoneCost = stone * 2;
+      }
+
+      //check for upgrade
     },
     buyUnit(food, wood, gold, stone, type) {
       let currentFood = this.resources[0].amount;
@@ -764,15 +911,9 @@ their eyes are only on the forests around them.`,
         if (this.playerSettings.population <= 1) {
           // cost is 5
           this.resources[0].amount -= 5;
-          this.resources[1].amount -= 5;
-          this.resources[2].amount -= 5;
-          this.resources[3].amount -= 5;
           this.levelUpCost = this.levelUpCost + baseCost;
         } else {
           this.resources[0].amount -= this.levelUpCost;
-          this.resources[1].amount -= this.levelUpCost;
-          this.resources[2].amount -= this.levelUpCost;
-          this.resources[3].amount -= this.levelUpCost;
           this.levelUpCost = this.levelUpCost + baseCost;
         }
 
@@ -797,15 +938,10 @@ their eyes are only on the forests around them.`,
         if (currentCity.population <= 1) {
           // cost is 5
           this.resources[0].amount -= 5;
-          this.resources[1].amount -= 5;
-          this.resources[2].amount -= 5;
-          this.resources[3].amount -= 5;
           currentCity[0].levelUpCost = currentCity[0].levelUpCost + baseCost;
         } else {
           this.resources[0].amount -= currentCity[0].levelUpCost;
-          this.resources[1].amount -= currentCity[0].levelUpCost;
-          this.resources[2].amount -= currentCity[0].levelUpCost;
-          this.resources[3].amount -= currentCity[0].levelUpCost;
+
           currentCity[0].levelUpCost = currentCity[0].levelUpCost + baseCost;
         }
         currentCity[0].population++;
@@ -857,12 +993,11 @@ their eyes are only on the forests around them.`,
         this.$swal("You do not have a lumberyard");
       }
     },
-    buyBuilding(food, wood, gold, stone, type) {
+    buyBuilding(food, wood, gold, stone, type, needBuilder) {
       let currentFood = this.resources[0].amount;
       let currentWood = this.resources[1].amount;
       let currentGold = this.resources[2].amount;
       let currentStone = this.resources[3].amount;
-
       if (
         currentFood >= food &&
         currentWood >= wood &&
