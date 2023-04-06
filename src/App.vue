@@ -1803,79 +1803,27 @@ their eyes are only on the forests around them.`,
       this.unitsOwned--;
     },
     trade(offer, receive) {
-      console.log(offer, receive);
-      
-      const baseTrade = 10;
-      const upgradedTrade = 6;
+  console.log(offer, receive);
 
-      // all food trades below
-      if (offer === "Food" && receive === "Food") {
-        // errormessage "You can't trade identical resources"
-      }
-      else if (offer === "Food" && receive === "Wood") {
-        this.resources[0].amount -= 10;
-        this.resources[1].amount += 1;
-      }
-      else if (offer === "Food" && receive === "Gold") {
-        this.resources[0].amount -= 10;
-        this.resources[2].amount += 1;
-      }
-      else if (offer === "Food" && receive === "Stone") {
-        this.resources[0].amount -= 10;
-        this.resources[3].amount += 1;
-      }
+  const hasUpgrade = this.upgradeInv.some(upgrade => upgrade.name === "Trading routes");
+  console.log(hasUpgrade)
+  if (offer === receive) {
+    // errormessage "You can't trade identical resources"
+    return;
+  }
 
-      // all wood trades below
-      else if (offer === "Wood" && receive === "Wood") {
-        // errormessage "You can't trade identical resources"
-      }
-      else if (offer === "Wood" && receive === "Food") {
-        this.resources[1].amount -= 10;
-        this.resources[0].amount += 1;
-      }
-      else if (offer === "Wood" && receive === "Gold") {
-        this.resources[1].amount -= 10;
-        this.resources[2].amount += 1;
-      }
-      else if (offer === "Wood" && receive === "Stone") {
-        this.resources[1].amount -= 10;
-        this.resources[3].amount += 1;
-      }
+  const resourceMap = {
+    "Food": 0,
+    "Wood": 1,
+    "Gold": 2,
+    "Stone": 3
+  };
 
-      //all gold trades below
-      if (offer === "Gold" && receive === "Gold") {
-        // errormessage "You can't trade identical resources"
-      }
-      else if (offer === "Gold" && receive === "Food") {
-        this.resources[2].amount -= 10;
-        this.resources[0].amount += 1;
-      }
-      else if (offer === "Gold" && receive === "Wood") {
-        this.resources[2].amount -= 10;
-        this.resources[1].amount += 1;
-      }
-      else if (offer === "Gold" && receive === "Stone") {
-        this.resources[2].amount -= 10;
-        this.resources[3].amount += 1;
-      }
+  const baseTrade = hasUpgrade ? 6 : 10;
 
-      //all stone trades below
-      if (offer === "Stone" && receive === "Stone") {
-        // errormessage "You can't trade identical resources"
-      }
-      else if (offer === "Stone" && receive === "Food") {
-        this.resources[3].amount -= 10;
-        this.resources[0].amount += 1;
-      }
-      else if (offer === "Stone" && receive === "Wood") {
-        this.resources[3].amount -= 10;
-        this.resources[1].amount += 1;
-      }
-      else if (offer === "Stone" && receive === "Gold") {
-        this.resources[3].amount -= 10;
-        this.resources[2].amount += 1;
-      }
-    },
+  this.resources[resourceMap[offer]].amount -= baseTrade;
+  this.resources[resourceMap[receive]].amount += 1;
+},
     toggleAlert() {
       this.noResources = !this.noResources;
     },
