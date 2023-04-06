@@ -95,6 +95,13 @@
           @delete="deleteUnit"
         />
       </div>
+      <div className="lg:col-start-1 lg:row-start-3 text-white">
+        <UpgradeInv
+          v-if="playerSettings.faction.name"
+          :upgrades="this.upgradeInv"
+          @delete="deleteUnit"
+        />
+      </div>
 
       <section
         id="Civ, buy tile, found city and level city section"
@@ -217,10 +224,12 @@
           <div
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
           >
-            <Building
-              v-for="upgrade in upgrades.filter((s) => s.age == this.age)"
+            <Upgrades
+              v-for="upgrade in filteredUpgrades"
               :key="upgrade.type"
               :type="upgrade.type"
+              :base="upgrade.base"
+              :bought="upgrade.bought"
               :subject="upgrade.subject"
               :food-cost="upgrade.foodCost"
               :wood-cost="upgrade.woodCost"
@@ -228,7 +237,7 @@
               :stone-cost="upgrade.stoneCost"
               :age="upgrade.age"
               :need-builder="upgrade.needBuilder"
-              @buy-building="buyUpgrade"
+              @buy-upgrade="buyUpgrade"
             />
           </div>
         </el-tab-pane>
@@ -329,6 +338,15 @@
                 Market
               </button>
             </div>
+            <div className="p-8">
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+                @click="fisheryNextToMarket"
+              >
+                Fishery next to market
+              </button>
+            </div>
             <!-- 
              <button
                 v-if="playerSettings.faction.name"
@@ -348,12 +366,23 @@
 import Player from "./components/Player.vue";
 import Resources from "./components/Resources.vue";
 import Building from "./components/Building.vue";
+import Upgrades from "./components/Upgrades.vue";
+import UpgradeInv from "./components/UpgradeInv.vue";
 import BuildingInv from "./components/BuildingInv.vue";
 import Factions from "./components/Factions.vue";
 import City from "./components/City.vue";
 
 export default {
-  components: { Resources, Building, Factions, Player, BuildingInv, City },
+  components: {
+    Resources,
+    Building,
+    Factions,
+    Player,
+    Upgrades,
+    BuildingInv,
+    UpgradeInv,
+    City,
+  },
   data() {
     return {
       noResources: false,
@@ -476,7 +505,7 @@ their eyes are only on the forests around them.`,
           age: 2,
         },
         {
-          type: "Siege works",
+          type: "Sieger",
           subject:
             "Deals 7x damage against buildings, has only 3 actions per turn",
           foodCost: 1,
@@ -566,7 +595,7 @@ their eyes are only on the forests around them.`,
         },
 
         {
-          type: "Trading post",
+          type: "Tradepost",
           subject: "A place to trade resources.",
           foodCost: 3,
           woodCost: 3,
@@ -693,6 +722,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Bronze farming tools",
           subject: "+1 food yield per farm",
+          base: "Farm",
+          bought: false,
+          upgradeLvl: 1,
           foodCost: 8,
           woodCost: 2,
           goldCost: 0,
@@ -703,6 +735,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Oxe drawn plow",
           subject: "+2 food yield per farm",
+          base: "Farm",
+          bought: false,
+          upgradeLvl: 2,
           foodCost: 16,
           woodCost: 4,
           goldCost: 0,
@@ -713,6 +748,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Bronze pickaxe",
           subject: "+1 stone yield per mine",
+          base: "Mine",
+          bought: false,
+          upgradeLvl: 1,
           foodCost: 2,
           woodCost: 4,
           goldCost: 0,
@@ -723,6 +761,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Mining network",
           subject: "+2 stone yield per mine",
+          base: "Mine",
+          bought: false,
+          upgradeLvl: 2,
           foodCost: 4,
           woodCost: 8,
           goldCost: 0,
@@ -733,6 +774,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Specialised goods",
           subject: "+1 gold yield per market",
+          base: "Market",
+          upgradeLvl: 1,
+          bought: false,
           foodCost: 0,
           woodCost: 2,
           goldCost: 10,
@@ -743,6 +787,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Currency exchange",
           subject: "+2 gold yield per market",
+          base: "Market",
+          upgradeLvl: 2,
+          bought: false,
           foodCost: 0,
           woodCost: 4,
           goldCost: 20,
@@ -753,6 +800,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Bronze axe",
           subject: "+1 wood yield per lumber camp",
+          base: "Lumberyard",
+          bought: false,
+          upgradeLvl: 1,
           foodCost: 4,
           woodCost: 8,
           goldCost: 0,
@@ -763,6 +813,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Serated saw blade",
           subject: "+2 wood yield per lumber camp",
+          base: "Lumberyard",
+          bought: false,
+          upgradeLvl: 2,
           foodCost: 8,
           woodCost: 16,
           goldCost: 0,
@@ -773,6 +826,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Fishing nets",
           subject: "+1 food yield per turn from fisheries",
+          base: "Fishery",
+          bougth: false,
+          upgradeLvl: 1,
           foodCost: 6,
           woodCost: 6,
           goldCost: 2,
@@ -783,6 +839,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Manmade bait",
           subject: "+2 food yield per turn from fisheries",
+          base: "Fishery",
+          bougth: false,
+          upgradeLvl: 2,
           foodCost: 12,
           woodCost: 12,
           goldCost: 4,
@@ -793,6 +852,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Bronze shield",
           subject: "Warriors gain +4 health",
+          base: "Warrior",
+          bougth: false,
+          upgradeLvl: 1,
           foodCost: 5,
           woodCost: 6,
           goldCost: 4,
@@ -803,6 +865,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Basic combat training",
           subject: "Warriors gain +2 attack",
+          base: "Warrior",
+          upgradeLvl: 2,
+          bougth: false,
           foodCost: 5,
           woodCost: 6,
           goldCost: 4,
@@ -813,6 +878,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Long bows",
           subject: "Archers gain +1 range on attacks",
+          base: "Archer",
+          bougth: false,
+          upgradeLvl: 1,
           foodCost: 5,
           woodCost: 5,
           goldCost: 4,
@@ -823,6 +891,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Archery practise",
           subject: "Archers gain +2 damage per turn",
+          base: "Archer",
+          upgradeLvl: 2,
+          bougth: false,
           foodCost: 5,
           woodCost: 5,
           goldCost: 4,
@@ -833,6 +904,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Wooden shields",
           subject: "Scouts gain +4 health",
+          base: "Scout",
+          upgradeLvl: 1,
+          bougth: false,
           foodCost: 8,
           woodCost: 4,
           goldCost: 4,
@@ -843,6 +917,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Crossbows",
           subject: "Scouts gain +1 range and +2 damage",
+          base: "Scout",
+          bougth: false,
+          upgradeLvl: 2,
           foodCost: 8,
           woodCost: 4,
           goldCost: 4,
@@ -853,6 +930,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Mounted crossbows",
           subject: "Watchtowers can fire twice per turn instead of once",
+          base: "Watchtower",
+          bought: false,
+          upgradeLvl: 1,
           foodCost: 2,
           woodCost: 8,
           goldCost: 0,
@@ -863,6 +943,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Reinforced turrets",
           subject: "Watchtowers can fire at targets 2 tiles away instead of 1",
+          base: "Watchtower",
+          upgradeLvl: 2,
+          bought: false,
           foodCost: 4,
           woodCost: 16,
           goldCost: 0,
@@ -874,6 +957,9 @@ their eyes are only on the forests around them.`,
           type: "Wheeled chassis",
           subject:
             "The siege works receives wheels, allowing it to move at a normal speed",
+          base: "Sieger",
+          bought: false,
+          upgradeLvl: 1,
           foodCost: 3,
           woodCost: 6,
           goldCost: 5,
@@ -885,6 +971,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Mounted sling",
           subject: "The siege works can sling rocks, giving it +1 range",
+          base: "Sieger",
+          bought: false,
+          upgradeLvl: 2,
           foodCost: 6,
           woodCost: 12,
           goldCost: 10,
@@ -896,6 +985,9 @@ their eyes are only on the forests around them.`,
           type: "Bridge railings",
           subject:
             "Allows builder to build bridges over fish sources and gain +1 food yield per turn",
+          base: "Builder",
+          bought: false,
+          upgradeLvl: 1,
           foodCost: 0,
           woodCost: 8,
           goldCost: 0,
@@ -907,6 +999,9 @@ their eyes are only on the forests around them.`,
           type: "Foundational support",
           subject:
             "Allows houses to have multiple floors, +1 population yield per house",
+          base: "Builder",
+          bought: false,
+          upgradeLvl: 2,
           foodCost: 4,
           woodCost: 6,
           goldCost: 0,
@@ -917,6 +1012,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Gravel roads",
           subject: "Creation cost lowered of roads to be halved stonecost",
+          base: "Road",
+          bought: false,
+          upgradeLvl: 1,
           foodCost: 2,
           woodCost: 0,
           goldCost: 2,
@@ -929,6 +1027,9 @@ their eyes are only on the forests around them.`,
           type: "Holy conversion",
           subject:
             "When priests kill an enemy, they convert to your cause instead of dying",
+          base: "Priest",
+          bought: false,
+          upgradeLvl: 2,
           foodCost: 5,
           woodCost: 5,
           goldCost: 5,
@@ -939,6 +1040,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Trading routes",
           subject: "Trading ratio goes down to 5-1",
+          base: "Tradepost",
+          upgradeLvl: 1,
+          bought: false,
           foodCost: 6,
           woodCost: 6,
           goldCost: 6,
@@ -949,6 +1053,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Reinforced architecture",
           subject: "Increases the health of walls by 4",
+          base: "Walls",
+          upgradeLvl: 1,
+          bought: false,
           foodCost: 2,
           woodCost: 10,
           goldCost: 2,
@@ -959,6 +1066,9 @@ their eyes are only on the forests around them.`,
         {
           type: "Bronze gates",
           subject: "Increases the health of walled-gates by 4",
+          base: "Wall-gate",
+          bought: false,
+          upgradeLvl: 1,
           foodCost: 2,
           woodCost: 8,
           goldCost: 4,
@@ -970,6 +1080,7 @@ their eyes are only on the forests around them.`,
       units: [
         { name: "Warrior", title: "Sjors", id: this.generateRandomId(8) },
       ],
+      upgradeInv: [],
       cities: [],
       cityNames: [
         "Owuocok",
@@ -1089,6 +1200,25 @@ their eyes are only on the forests around them.`,
         return false;
       });
     },
+    filteredUpgrades() {
+      return this.upgrades.filter((upgrade) => {
+        const withinAge = upgrade.age <= this.age;
+        const hasBaseUnit = this.units.some(
+          (unit) => unit.name === upgrade.base
+        );
+        const notBought = !upgrade.bought;
+        let prevLevelBought = true;
+        if (upgrade.upgradeLvl > 1) {
+          const prevUpgrade = this.upgrades.find(
+            (u) =>
+              u.base === upgrade.base && u.upgradeLvl === upgrade.upgradeLvl - 1
+          );
+          prevLevelBought = prevUpgrade && prevUpgrade.bought;
+        }
+
+        return withinAge && hasBaseUnit && notBought && prevLevelBought;
+      });
+    },
     totalPopulation() {
       let totalPopulation = this.capital.population; // initialize total population to 0
       for (let i = 0; i < this.cities.length; i++) {
@@ -1135,24 +1265,71 @@ their eyes are only on the forests around them.`,
       }
       this.turn += 1;
     },
-    buyUpgrade(food, wood, gold, stone, type) {
+    buyUpgrade(food, base, bougth, wood, gold, stone, type) {
       const currentUpgrade = this.upgrades.find((u) => u.type === type);
 
-      //remove the resources
-      this.resources[0].amount -= food;
-      this.resources[1].amount -= wood;
-      this.resources[2].amount -= gold;
-      this.resources[3].amount -= stone;
-
-      //increase upgrade cost
-      if (currentUpgrade) {
-        currentUpgrade.foodCost = food * 2;
-        currentUpgrade.woodCost = wood * 2;
-        currentUpgrade.goldCost = gold * 2;
-        currentUpgrade.stoneCost = stone * 2;
+      if (currentUpgrade.base === "Farm") {
+        if (currentUpgrade.age === 3) {
+          this.resources[0].modifier += 2;
+        } else {
+          this.resources[0].modifier++;
+        }
+        currentUpgrade.bought = true;
+        this.upgradeInv.push({
+          name: currentUpgrade.type,
+          title: currentUpgrade.type,
+        });
+      } else if (currentUpgrade.base === "Fishery") {
+        if (currentUpgrade.age === 3) {
+          this.resources[0].modifier += 2;
+        } else {
+          this.resources[0].modifier++;
+        }
+        currentUpgrade.bought = true;
+        this.upgradeInv.push({
+          name: currentUpgrade.type,
+          title: currentUpgrade.type,
+        });
+      } else if (currentUpgrade.base === "Lumberyard") {
+        if (currentUpgrade.age === 3) {
+          this.resources[1].modifier += 2;
+        } else {
+          this.resources[1].modifier++;
+        }
+        currentUpgrade.bought = true;
+        this.upgradeInv.push({
+          name: currentUpgrade.type,
+          title: currentUpgrade.type,
+        });
+      } else if (currentUpgrade.base === "Market") {
+        if (currentUpgrade.age === 3) {
+          this.resources[2].modifier += 2;
+        } else {
+          this.resources[2].modifier++;
+        }
+        currentUpgrade.bought = true;
+        this.upgradeInv.push({
+          name: currentUpgrade.type,
+          title: currentUpgrade.type,
+        });
+      } else if (currentUpgrade.base === "Mine") {
+        if (currentUpgrade.age === 3) {
+          this.resources[3].modifier += 2;
+        } else {
+          this.resources[3].modifier++;
+        }
+        currentUpgrade.bought = true;
+        this.upgradeInv.push({
+          name: currentUpgrade.type,
+          title: currentUpgrade.type,
+        });
+      } else {
+        currentUpgrade.bought = true;
+        this.upgradeInv.push({
+          name: currentUpgrade.type,
+          title: currentUpgrade.type,
+        });
       }
-
-      //check for upgrade
     },
     buyUnit(food, wood, gold, stone, type) {
       let currentFood = this.resources[0].amount;
@@ -1313,6 +1490,8 @@ their eyes are only on the forests around them.`,
           if (this.playerSettings.faction.name == "The Devils") {
             this.resources[0].modifier++;
           }
+        } else if (type == "Fishery") {
+          this.resources[0].modifier++;
         } else if (type == "Lumberyard") {
           this.resources[1].modifier++;
         } else if (type == "Market") {
@@ -1475,6 +1654,13 @@ their eyes are only on the forests around them.`,
           }
         }
       });
+    },
+    fisheryNextToMarket() {
+      if (this.units.some((unit) => unit.name === "Fishery")) {
+        this.resources[2].modifier++;
+      } else {
+        this.$swal(`You do not have a fishery.`);
+      }
     },
     deleteUnit(unitId) {
       const foundUnit = this.units.filter((unit) => unit.id == unitId);
