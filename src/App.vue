@@ -175,7 +175,7 @@
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
           >
             <Building
-              v-for="soldier in soldiers.filter((s) => s.age == this.age)"
+              v-for="soldier in soldiers.filter((s) => s.age <= this.age)"
               :key="soldier.type"
               :type="soldier.type"
               :subject="soldier.subject"
@@ -477,7 +477,8 @@ their eyes are only on the forests around them.`,
         },
         {
           type: "Siege works",
-          subject: "Deals 7x damage against buildings, has only 3 actions per turn",
+          subject:
+            "Deals 7x damage against buildings, has only 3 actions per turn",
           foodCost: 1,
           woodCost: 2,
           goldCost: 0,
@@ -563,16 +564,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 1,
         },
-        {
-          type: "Watchtower",
-          subject: "Defensive tower that can attack enemy unit",
-          foodCost: 1,
-          woodCost: 4,
-          goldCost: 0,
-          stoneCost: 4,
-          needBuilder: true,
-          age: 1,
-        },
+
         {
           type: "Trading post",
           subject: "A place to trade resources.",
@@ -653,7 +645,7 @@ their eyes are only on the forests around them.`,
           needBuilder: true,
           age: 2,
         },
-         {
+        {
           type: "Workshop",
           subject: "Allows the city to produce siege works",
           foodCost: 1,
@@ -663,10 +655,11 @@ their eyes are only on the forests around them.`,
           needBuilder: true,
           age: 2,
         },
-          // check value
+        // check value
         {
           type: "Wall",
-          subject: "A high wall with high health that doesn't allow anyone to stand atop it (hp:16)",
+          subject:
+            "A high wall with high health that doesn't allow anyone to stand atop it (hp:16)",
           foodCost: 1,
           woodCost: 3,
           goldCost: 1,
@@ -676,7 +669,8 @@ their eyes are only on the forests around them.`,
         },
         {
           type: "Walled-gate",
-          subject: "A high wall with a gate in it, allowing only the one who build it to pass through (11 hp)",
+          subject:
+            "A high wall with a gate in it, allowing only the one who build it to pass through (11 hp)",
           foodCost: 1,
           woodCost: 4,
           goldCost: 2,
@@ -706,7 +700,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 2,
         },
-         {
+        {
           type: "Oxe drawn plow",
           subject: "+2 food yield per farm",
           foodCost: 16,
@@ -716,7 +710,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-         {
+        {
           type: "Bronze pickaxe",
           subject: "+1 stone yield per mine",
           foodCost: 2,
@@ -726,7 +720,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 2,
         },
-         {
+        {
           type: "Mining network",
           subject: "+2 stone yield per mine",
           foodCost: 4,
@@ -736,7 +730,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-         {
+        {
           type: "Specialised goods",
           subject: "+1 gold yield per market",
           foodCost: 0,
@@ -746,7 +740,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 2,
         },
-         {
+        {
           type: "Currency exchange",
           subject: "+2 gold yield per market",
           foodCost: 0,
@@ -796,7 +790,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-          {
+        {
           type: "Bronze shield",
           subject: "Warriors gain +4 health",
           foodCost: 5,
@@ -816,7 +810,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-         {
+        {
           type: "Long bows",
           subject: "Archers gain +1 range on attacks",
           foodCost: 5,
@@ -826,7 +820,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 2,
         },
-         {
+        {
           type: "Archery practise",
           subject: "Archers gain +2 damage per turn",
           foodCost: 5,
@@ -836,7 +830,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-         {
+        {
           type: "Wooden shields",
           subject: "Scouts gain +4 health",
           foodCost: 8,
@@ -846,7 +840,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 2,
         },
-            {
+        {
           type: "Crossbows",
           subject: "Scouts gain +1 range and +2 damage",
           foodCost: 8,
@@ -865,7 +859,7 @@ their eyes are only on the forests around them.`,
           stoneCost: 8,
           needBuilder: false,
           age: 2,
-        },        
+        },
         {
           type: "Reinforced turrets",
           subject: "Watchtowers can fire at targets 2 tiles away instead of 1",
@@ -876,9 +870,10 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-         {
+        {
           type: "Wheeled chassis",
-          subject: "The siege works receives wheels, allowing it to move at a normal speed",
+          subject:
+            "The siege works receives wheels, allowing it to move at a normal speed",
           foodCost: 3,
           woodCost: 6,
           goldCost: 5,
@@ -886,8 +881,8 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 2,
         },
-        
-         {
+
+        {
           type: "Mounted sling",
           subject: "The siege works can sling rocks, giving it +1 range",
           foodCost: 6,
@@ -899,7 +894,8 @@ their eyes are only on the forests around them.`,
         },
         {
           type: "Bridge railings",
-          subject: "Allows builder to build bridges over fish sources and gain +1 food yield per turn",
+          subject:
+            "Allows builder to build bridges over fish sources and gain +1 food yield per turn",
           foodCost: 0,
           woodCost: 8,
           goldCost: 0,
@@ -909,7 +905,8 @@ their eyes are only on the forests around them.`,
         },
         {
           type: "Foundational support",
-          subject: "Allows houses to have multiple floors, +1 population yield per house",
+          subject:
+            "Allows houses to have multiple floors, +1 population yield per house",
           foodCost: 4,
           woodCost: 6,
           goldCost: 0,
@@ -927,10 +924,11 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-       
-         {
+
+        {
           type: "Holy conversion",
-          subject: "When priests kill an enemy, they convert to your cause instead of dying",
+          subject:
+            "When priests kill an enemy, they convert to your cause instead of dying",
           foodCost: 5,
           woodCost: 5,
           goldCost: 5,
@@ -938,7 +936,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-         {
+        {
           type: "Trading routes",
           subject: "Trading ratio goes down to 5-1",
           foodCost: 6,
@@ -948,7 +946,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-         {
+        {
           type: "Reinforced architecture",
           subject: "Increases the health of walls by 4",
           foodCost: 2,
@@ -958,7 +956,7 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-         {
+        {
           type: "Bronze gates",
           subject: "Increases the health of walled-gates by 4",
           foodCost: 2,
@@ -968,7 +966,6 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
-        
       ],
       units: [
         { name: "Warrior", title: "Sjors", id: this.generateRandomId(8) },
@@ -1102,30 +1099,32 @@ their eyes are only on the forests around them.`,
   },
   methods: {
     ageUp() {
+      const ageRequirements = {
+        1: 10,
+        2: 30,
+      };
+
+      const requiredAmount = ageRequirements[this.age];
+
       if (
-        this.age === 1 &&
-        this.resources[0].amount >= 10 &&
-        this.resources[1].amount >= 10 &&
-        this.resources[2].amount >= 10 &&
-        this.resources[3].amount >= 10
+        requiredAmount &&
+        this.resources.every((resource) => resource.amount >= requiredAmount)
       ) {
-        this.resources[0].amount -= 10;
-        this.resources[1].amount -= 10;
-        this.resources[2].amount -= 10;
-        this.resources[3].amount -= 10;
+        this.resources.forEach(
+          (resource) => (resource.amount -= requiredAmount)
+        );
         this.age++;
-      } else if (
-        this.age === 2 &&
-        this.resources[0].amount >= 30 &&
-        this.resources[1].amount >= 30 &&
-        this.resources[2].amount >= 30 &&
-        this.resources[3].amount >= 30
-      ) {
-        this.resources[0].amount -= 30;
-        this.resources[1].amount -= 30;
-        this.resources[2].amount -= 30;
-        this.resources[3].amount -= 30;
-        this.age++;
+        if (requiredAmount === 30) {
+          this.resources.forEach((resource) => (resource.modifier += 2));
+          this.resources.forEach((resource) => {
+            resource.modifier += this.cities.length * 2;
+          });
+        } else {
+          this.resources.forEach((resource) => resource.modifier++);
+          this.resources.forEach((resource) => {
+            resource.modifier += this.cities.length;
+          });
+        }
       } else {
         this.showAlert();
       }
@@ -1267,6 +1266,17 @@ their eyes are only on the forests around them.`,
         this.resources[1].modifier++;
         this.resources[2].modifier++;
         this.resources[3].modifier++;
+        if (this.age === 2) {
+          this.resources[0].modifier++;
+          this.resources[1].modifier++;
+          this.resources[2].modifier++;
+          this.resources[3].modifier++;
+        } else if (this.age === 3) {
+          this.resources[0].modifier += 2;
+          this.resources[1].modifier += 2;
+          this.resources[2].modifier += 2;
+          this.resources[3].modifier += 2;
+        }
         this.playerSettings.population++;
         this.units.splice(settlerIndex, 1);
         this.cities.push({
@@ -1403,6 +1413,17 @@ their eyes are only on the forests around them.`,
     },
     destroyCity(cityId) {
       this.cities = this.cities.filter((city) => city.id != cityId);
+      if (this.age == 2) {
+        this.resources[0].modifier--;
+        this.resources[1].modifier--;
+        this.resources[2].modifier--;
+        this.resources[3].modifier--;
+      } else if (this.age == 3) {
+        this.resources[0].modifier - 2;
+        this.resources[1].modifier - 2;
+        this.resources[2].modifier - 2;
+        this.resources[3].modifier - 2;
+      }
     },
     destroyCapital() {
       this.capital.name = this.cities[0].name;
@@ -1461,27 +1482,18 @@ their eyes are only on the forests around them.`,
 
       if (foundUnit[0].name == "Farm") {
         this.resources[0].modifier--;
-        this.resources[0].amount -= 8;
         if (this.playerSettings.faction.name == "The Devils") {
           this.resources[0].modifier--;
         }
       } else if (foundUnit[0].name == "Lumberyard") {
         this.resources[1].modifier--;
-        this.resources[1].amount -= 8;
       } else if (foundUnit[0].name == "Market") {
         this.resources[2].modifier--;
-        this.resources[2].amount -= 8;
         if (this.playerSettings.faction.name == "The Caws") {
           this.resources[2].modifier--;
         }
       } else if (foundUnit[0].name == "Mine") {
         this.resources[3].modifier--;
-        this.resources[3].amount -= 8;
-      } else if (isBuilding) {
-        this.resources[0].amount -= 2;
-        this.resources[1].amount -= 2;
-        this.resources[2].amount -= 2;
-        this.resources[3].amount -= 2;
       }
       this.units = this.units.filter((unit) => unit.id != unitId);
       this.unitsOwned--;
