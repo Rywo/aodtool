@@ -242,6 +242,7 @@
             />
           </div>
         </el-tab-pane>
+        <el-tab-pane label="Trading"></el-tab-pane>
         <el-tab-pane label="Upgrades">
           <div
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
@@ -1665,6 +1666,10 @@ their eyes are only on the forests around them.`,
     },
     destroyCity(cityId) {
       this.cities = this.cities.filter((city) => city.id != cityId);
+      this.resources[0].modifier--;
+      this.resources[1].modifier--;
+      this.resources[2].modifier--;
+      this.resources[3].modifier--;
       if (this.age == 2) {
         this.resources[0].modifier--;
         this.resources[1].modifier--;
