@@ -1804,6 +1804,11 @@ their eyes are only on the forests around them.`,
     },
     trade(offer, receive) {
       console.log(offer, receive);
+
+      if (offer === "Food" && receive === "Wood") {
+        this.resources[0].amount -= 10;
+        this.resources[0].amount += 1;
+      }
     },
     toggleAlert() {
       this.noResources = !this.noResources;
