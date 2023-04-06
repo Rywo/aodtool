@@ -1468,7 +1468,11 @@ their eyes are only on the forests around them.`,
         if (type === "plunder") {
           resource.amount += amount;
         } else if (type === "plundered") {
-          resource.amount -= amount;
+          if (resource.amount === 0) {
+            this.$swal(`You do not have any this resource left.`);
+          } else {
+            resource.amount = Math.max(resource.amount - amount, 0);
+          }
         }
       });
     },
