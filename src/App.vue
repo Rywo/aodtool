@@ -242,7 +242,35 @@
             />
           </div>
         </el-tab-pane>
-        <el-tab-pane label="Trading"></el-tab-pane>
+        <el-tab-pane label="Trading">
+          <div className="p-8 rounded-xl bg-slate-600/50 shadow-md flex">
+            <el-select v-model="tradeOffer">
+              <el-option
+                v-for="tradeOption in tradeOptions"
+                :key="tradeOption.value"
+                :label="tradeOption.label"
+                :value="tradeOption.value"
+              ></el-option>
+            </el-select>
+
+            <el-select v-model="tradeReceive">
+              <el-option
+                v-for="tradeOption in tradeOptions"
+                :key="tradeOption.value"
+                :label="tradeOption.label"
+                :value="tradeOption.value"
+              ></el-option>
+            </el-select>
+
+            <button
+              v-if="playerSettings.faction.name"
+              class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+              @click="trade(tradeOffer, tradeReceive)"
+            >
+              Trade
+            </button>
+          </div>
+        </el-tab-pane>
         <el-tab-pane label="Upgrades">
           <div
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
@@ -1236,6 +1264,14 @@ their eyes are only on the forests around them.`,
         "Alan",
         "Reginald",
       ],
+      tradeOptions: [
+        { label: "Food", value: "Food" },
+        { label: "Wood", value: "Wood" },
+        { label: "Gold", value: "Gold" },
+        { label: "Stone", value: "Stone" },
+      ],
+      tradeOffer: "",
+      tradeReceive: "",
       unitsOwned: 1,
       turn: 1,
       age: 1,
@@ -1765,6 +1801,9 @@ their eyes are only on the forests around them.`,
       }
       this.units = this.units.filter((unit) => unit.id != unitId);
       this.unitsOwned--;
+    },
+    trade(offer, receive) {
+      console.log(offer, receive);
     },
     toggleAlert() {
       this.noResources = !this.noResources;
