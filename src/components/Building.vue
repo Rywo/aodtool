@@ -77,6 +77,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    producesUnit: {
+      type: String,
+      required: false,
+    },
   },
   methods: {
     buyBuilding() {
@@ -87,7 +91,8 @@ export default {
         this.goldCost,
         this.stoneCost,
         this.type,
-        this.needBuilder
+        this.needBuilder,
+        this.producesUnit
       );
     },
   },

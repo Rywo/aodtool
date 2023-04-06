@@ -174,6 +174,7 @@
               :stone-cost="building.stoneCost"
               :age="building.age"
               :need-builder="building.needBuilder"
+              :produces-unit="building.producesUnit"
               @buy-building="buyBuilding"
             /></div
         ></el-tab-pane>
@@ -182,7 +183,29 @@
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
           >
             <Building
-              v-for="soldier in soldiers.filter((s) => s.age <= this.age)"
+              v-for="passiveUnit in passiveUnits.filter(
+                (s) => s.age <= this.age
+              )"
+              :key="passiveUnit.type"
+              :type="passiveUnit.type"
+              :subject="passiveUnit.subject"
+              :food-cost="passiveUnit.foodCost"
+              :wood-cost="passiveUnit.woodCost"
+              :gold-cost="passiveUnit.goldCost"
+              :stone-cost="passiveUnit.stoneCost"
+              :age="passiveUnit.age"
+              :need-builder="passiveUnit.needBuilder"
+              @buy-building="buyUnit"
+            />
+          </div>
+          <h2 class="text-2xl text-white text-left mb-4">Soldiers</h2>
+          <div
+            class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
+          >
+            <Building
+              v-for="soldier in filteredSoldiers.filter(
+                (s) => s.age <= this.age
+              )"
               :key="soldier.type"
               :type="soldier.type"
               :subject="soldier.subject"
@@ -206,7 +229,6 @@
 
               <button @click="destroyCapital">Destroy</button>
             </div>
-
             <h2 class="text-2xl text-white text-left mb-4">Cities</h2>
             <City
               v-for="(city, idx) in cities"
@@ -338,13 +360,49 @@
                 Market
               </button>
             </div>
-            <div className="p-8">
+
+            <h2 class="text-2xl text-white text-left mt-8 mb-4">
+              Getting attacked
+            </h2>
+            <div class="grid lg:grid-cols-3 2xl:grid-cols-5 w-full gap-4">
               <button
                 v-if="playerSettings.faction.name"
                 class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
                 @click="fisheryNextToMarket"
               >
                 Fishery next to market
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="increaseModifier(0)"
+              >
+                Add food +1
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="increaseModifier(1)"
+              >
+                Add wood +1
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="increaseModifier(2)"
+              >
+                Add gold +1
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700 h-full"
+                @click="increaseModifier(3)"
+              >
+                Add stone +1
               </button>
             </div>
             <!-- 
@@ -515,6 +573,8 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 2,
         },
+      ],
+      passiveUnits: [
         {
           type: "Settler",
           subject: "Can settle new city",
@@ -637,6 +697,7 @@ their eyes are only on the forests around them.`,
         {
           type: "Barracks",
           subject: "Allows the city to train Warrior units",
+          producesUnit: "Warrior",
           foodCost: 3,
           woodCost: 4,
           goldCost: 0,
@@ -647,6 +708,7 @@ their eyes are only on the forests around them.`,
         {
           type: "Archery",
           subject: "Allows the city to train archer units",
+          producesUnit: "Archer",
           foodCost: 3,
           woodCost: 3,
           goldCost: 0,
@@ -657,6 +719,7 @@ their eyes are only on the forests around them.`,
         {
           type: "Outpost",
           subject: "Allows the city to train scouts",
+          producesUnit: "Scout",
           foodCost: 6,
           woodCost: 2,
           goldCost: 0,
@@ -667,6 +730,7 @@ their eyes are only on the forests around them.`,
         {
           type: "Church",
           subject: "Allows the city to train Priests",
+          producesUnit: "Priest",
           foodCost: 3,
           woodCost: 3,
           goldCost: 1,
@@ -677,6 +741,7 @@ their eyes are only on the forests around them.`,
         {
           type: "Workshop",
           subject: "Allows the city to produce siege works",
+          producesUnit: "Sieger",
           foodCost: 1,
           woodCost: 4,
           goldCost: 1,
@@ -1200,6 +1265,11 @@ their eyes are only on the forests around them.`,
         return false;
       });
     },
+    filteredSoldiers() {
+      return this.soldiers.filter((soldier) => {
+        return this.units.some((unit) => unit.producesUnit === soldier.type);
+      });
+    },
     filteredUpgrades() {
       return this.upgrades.filter((upgrade) => {
         const withinAge = upgrade.age <= this.age;
@@ -1228,6 +1298,9 @@ their eyes are only on the forests around them.`,
     },
   },
   methods: {
+    increaseModifier(number) {
+      this.resources[number].modifier++;
+    },
     ageUp() {
       const ageRequirements = {
         1: 10,
@@ -1338,7 +1411,6 @@ their eyes are only on the forests around them.`,
       let currentStone = this.resources[3].amount;
       const randomUnitName =
         this.unitNames[Math.floor(Math.random() * this.cityNames.length)];
-
       if (this.totalPopulation > this.unitsOwned) {
         if (
           currentFood >= food &&
@@ -1474,7 +1546,7 @@ their eyes are only on the forests around them.`,
         this.$swal("You do not have a lumberyard");
       }
     },
-    buyBuilding(food, wood, gold, stone, type, needBuilder) {
+    buyBuilding(food, wood, gold, stone, type, needBuilder, producesUnit) {
       let currentFood = this.resources[0].amount;
       let currentWood = this.resources[1].amount;
       let currentGold = this.resources[2].amount;
@@ -1506,6 +1578,7 @@ their eyes are only on the forests around them.`,
           name: type,
           title: type,
           id: this.generateRandomId(8),
+          producesUnit: producesUnit,
         });
         this.resources[0].amount = currentFood - food;
         this.resources[1].amount -= wood;
