@@ -116,6 +116,21 @@
             +1 wood for building in forest
           </button>
 
+          <button
+            v-if="this.playerSettings.faction.name == 'The Devils'"
+            class="px-2 py-3 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="getFood"
+          >
+            +1 food for placing producing
+          </button>
+
+          <button
+            v-if="this.playerSettings.faction.name == 'The Devils'"
+            class="px-2 py-3 mt-5 mb-5 shadow-lg bg-blue-500 hover:bg-blue-700"
+            @click="getFoodToo"
+          >
+            +1 food for ending in woods Red bastard
+          </button>
           <el-form-item>
             <span class="text-white">Tiles away </span>
             <input class="text-black text-center w-full" v-model="tilesAway" />
@@ -1769,6 +1784,12 @@ their eyes are only on the forests around them.`,
         }
       });
     },
+    getFood(){
+      this.resources[0].modifier++;
+    },
+    getFoodToo(){
+      this.resources[0].amount++;
+    },
     fisheryNextToMarket() {
       if (this.units.some((unit) => unit.name === "Fishery")) {
         this.resources[2].modifier++;
@@ -1803,27 +1824,32 @@ their eyes are only on the forests around them.`,
       this.unitsOwned--;
     },
     trade(offer, receive) {
-  console.log(offer, receive);
+      console.log(offer, receive);
 
-  const hasUpgrade = this.upgradeInv.some(upgrade => upgrade.name === "Trading routes");
-  console.log(hasUpgrade)
-  if (offer === receive) {
-    // errormessage "You can't trade identical resources"
-    return;
-  }
+      const hasUpgrade = this.upgradeInv.some(upgrade => upgrade.name === "Trading routes");
+      console.log(hasUpgrade)
+      if (offer === receive ) {
+        // errormessage "You can't trade identical resources"
+        return;
+      }
 
-  const resourceMap = {
-    "Food": 0,
-    "Wood": 1,
-    "Gold": 2,
-    "Stone": 3
-  };
+      const resourceMap = {
+        "Food": 0,
+        "Wood": 1,
+        "Gold": 2,
+        "Stone": 3
+      };
 
-  const baseTrade = hasUpgrade ? 6 : 10;
+      const baseTrade = hasUpgrade ? 6 : 10;
 
-  this.resources[resourceMap[offer]].amount -= baseTrade;
-  this.resources[resourceMap[receive]].amount += 1;
-},
+      // Check if the player has enough resources to trade
+      if (this.resources[resourceMap[offer]].amount >= baseTrade) {
+        this.resources[resourceMap[offer]].amount -= baseTrade;
+        this.resources[resourceMap[receive]].amount += 1;
+      } else {
+        this.$swal("You do not have enough resources for this.");
+      }
+    },
     toggleAlert() {
       this.noResources = !this.noResources;
     },
