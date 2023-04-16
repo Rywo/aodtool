@@ -828,6 +828,37 @@ their eyes are only on the forests around them.`,
         },
       ],
       upgrades: [
+        
+        // TODO connect this to function as an upgrade, replacing the natural increase from aging
+        {
+          type: "Urban planning",
+          subject: "+1 yield all resources per city",
+          base: "",
+          bought: false,
+          upgradeLvl: 1,
+          foodCost: 10,
+          woodCost: 10,
+          goldCost: 10,
+          stoneCost: 10,
+          needBuilder: false,
+          age: 2,
+        },
+        {
+          type: "Writing and mathematics",
+          subject: "+1 yield all resources per city",
+          base: "",
+          bought: false,
+          upgradeLvl: 2,
+          foodCost: 30,
+          woodCost: 30,
+          goldCost: 30,
+          stoneCost: 30,
+          needBuilder: false,
+          age: 3,
+        },   
+
+        //until here c:
+
         {
           type: "Bronze farming tools",
           subject: "+1 food yield per farm",
