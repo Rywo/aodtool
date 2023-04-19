@@ -828,7 +828,6 @@ their eyes are only on the forests around them.`,
         },
       ],
       upgrades: [
-        
         // TODO connect this to function as an upgrade, replacing the natural increase from aging
         {
           type: "Urban planning",
@@ -855,7 +854,7 @@ their eyes are only on the forests around them.`,
           stoneCost: 30,
           needBuilder: false,
           age: 3,
-        },   
+        },
 
         //until here c:
 
@@ -1426,9 +1425,17 @@ their eyes are only on the forests around them.`,
 
       if (currentUpgrade.base === "Farm") {
         if (currentUpgrade.age === 3) {
-          this.resources[0].modifier += 2;
+          this.units.forEach((unit) => {
+            if (unit.title === "Farm") {
+              this.resources[0].modifier += 2;
+            }
+          });
         } else {
-          this.resources[0].modifier++;
+          this.units.forEach((unit) => {
+            if (unit.title === "Farm") {
+              this.resources[0].modifier++;
+            }
+          });
         }
         currentUpgrade.bought = true;
         this.upgradeInv.push({
@@ -1437,9 +1444,17 @@ their eyes are only on the forests around them.`,
         });
       } else if (currentUpgrade.base === "Fishery") {
         if (currentUpgrade.age === 3) {
-          this.resources[0].modifier += 2;
+          this.units.forEach((unit) => {
+            if (unit.title === "Fishery") {
+              this.resources[0].modifier += 2;
+            }
+          });
         } else {
-          this.resources[0].modifier++;
+          this.units.forEach((unit) => {
+            if (unit.title === "Fishery") {
+              this.resources[0].modifier++;
+            }
+          });
         }
         currentUpgrade.bought = true;
         this.upgradeInv.push({
@@ -1448,9 +1463,17 @@ their eyes are only on the forests around them.`,
         });
       } else if (currentUpgrade.base === "Lumberyard") {
         if (currentUpgrade.age === 3) {
-          this.resources[1].modifier += 2;
+          this.units.forEach((unit) => {
+            if (unit.title === "Lumberyard") {
+              this.resources[1].modifier += 2;
+            }
+          });
         } else {
-          this.resources[1].modifier++;
+          this.units.forEach((unit) => {
+            if (unit.title === "Lumberyard") {
+              this.resources[1].modifier++;
+            }
+          });
         }
         currentUpgrade.bought = true;
         this.upgradeInv.push({
@@ -1459,9 +1482,17 @@ their eyes are only on the forests around them.`,
         });
       } else if (currentUpgrade.base === "Market") {
         if (currentUpgrade.age === 3) {
-          this.resources[2].modifier += 2;
+          this.units.forEach((unit) => {
+            if (unit.title === "Market") {
+              this.resources[2].modifier += 2;
+            }
+          });
         } else {
-          this.resources[2].modifier++;
+          this.units.forEach((unit) => {
+            if (unit.title === "Market") {
+              this.resources[2].modifier++;
+            }
+          });
         }
         currentUpgrade.bought = true;
         this.upgradeInv.push({
@@ -1470,9 +1501,17 @@ their eyes are only on the forests around them.`,
         });
       } else if (currentUpgrade.base === "Mine") {
         if (currentUpgrade.age === 3) {
-          this.resources[3].modifier += 2;
+          this.units.forEach((unit) => {
+            if (unit.title === "Mine") {
+              this.resources[3].modifier += 2;
+            }
+          });
         } else {
-          this.resources[3].modifier++;
+          this.units.forEach((unit) => {
+            if (unit.title === "Mine") {
+              this.resources[3].modifier++;
+            }
+          });
         }
         currentUpgrade.bought = true;
         this.upgradeInv.push({
@@ -1815,10 +1854,10 @@ their eyes are only on the forests around them.`,
         }
       });
     },
-    getFood(){
+    getFood() {
       this.resources[0].modifier++;
     },
-    getFoodToo(){
+    getFoodToo() {
       this.resources[0].amount++;
     },
     fisheryNextToMarket() {
@@ -1857,18 +1896,20 @@ their eyes are only on the forests around them.`,
     trade(offer, receive) {
       console.log(offer, receive);
 
-      const hasUpgrade = this.upgradeInv.some(upgrade => upgrade.name === "Trading routes");
-      console.log(hasUpgrade)
-      if (offer === receive ) {
+      const hasUpgrade = this.upgradeInv.some(
+        (upgrade) => upgrade.name === "Trading routes"
+      );
+      console.log(hasUpgrade);
+      if (offer === receive) {
         // errormessage "You can't trade identical resources"
         return;
       }
 
       const resourceMap = {
-        "Food": 0,
-        "Wood": 1,
-        "Gold": 2,
-        "Stone": 3
+        Food: 0,
+        Wood: 1,
+        Gold: 2,
+        Stone: 3,
       };
 
       const baseTrade = hasUpgrade ? 6 : 10;
