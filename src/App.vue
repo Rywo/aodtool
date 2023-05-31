@@ -87,7 +87,13 @@
           @buy-special="buySpecial"
         />
       </div>
-
+      <div className="lg:col-start-1 lg:row-start-3 text-white">
+        <DominionInv
+          v-if="playerSettings.faction.name"
+          :units="this.dominionsTaken"
+          @delete="removeDominion"
+        />
+      </div>
       <div className="lg:col-start-1 lg:row-start-3 text-white">
         <BuildingInv
           v-if="playerSettings.faction.name"
@@ -175,6 +181,21 @@
     >
       <el-tabs type="border-card">
         <el-tab-pane label="Buildings">
+          <h2 class="text-2xl text-white mb-4 text-center">
+            Dominions
+          </h2>
+          <div
+            class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-4 mb-10"
+          >
+            <Dominion
+              v-for="(dom, idx) in dominions"
+              :key="idx"
+              :type="dom.type"
+              :subject="dom.subject"
+              @buy-building="takeDominion"
+            />
+          </div>
+          <h2 class="text-2xl text-white text-left mb-4">Buildings</h2>
           <div
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-4"
           >
@@ -287,6 +308,41 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="Upgrades">
+          <div
+            class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
+          >
+            <Upgrades
+              v-for="upgrade in ageUpgrades"
+              :key="upgrade.type"
+              :type="upgrade.type"
+              :base="upgrade.base"
+              :bought="upgrade.bought"
+              :subject="upgrade.subject"
+              :food-cost="upgrade.foodCost"
+              :wood-cost="upgrade.woodCost"
+              :gold-cost="upgrade.goldCost"
+              :stone-cost="upgrade.stoneCost"
+              :age="upgrade.age"
+              :need-builder="upgrade.needBuilder"
+              @buy-upgrade="buyUpgrade"
+            />
+
+             <Upgrades
+              v-for="upgrade in dominionUpgrades"
+              :key="upgrade.type"
+              :type="upgrade.type"
+              :base="upgrade.base"
+              :bought="upgrade.bought"
+              :subject="upgrade.subject"
+              :food-cost="upgrade.foodCost"
+              :wood-cost="upgrade.woodCost"
+              :gold-cost="upgrade.goldCost"
+              :stone-cost="upgrade.stoneCost"
+              :age="upgrade.age"
+              :need-builder="upgrade.needBuilder"
+              @buy-upgrade="buyUpgrade"
+            />
+          </div>
           <div
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
           >
@@ -469,8 +525,10 @@ import Player from "./components/Player.vue";
 import Resources from "./components/Resources.vue";
 import Building from "./components/Building.vue";
 import Upgrades from "./components/Upgrades.vue";
+import Dominion from "./components/Dominion.vue";
 import UpgradeInv from "./components/UpgradeInv.vue";
 import BuildingInv from "./components/BuildingInv.vue";
+import DominionInv from "./components/DominionInv.vue";
 import Factions from "./components/Factions.vue";
 import City from "./components/City.vue";
 
@@ -482,7 +540,9 @@ export default {
     Player,
     Upgrades,
     BuildingInv,
+    Dominion,
     UpgradeInv,
+    DominionInv,
     City,
   },
   data() {
@@ -552,18 +612,18 @@ their eyes are only on the forests around them.`,
             { name: "Wood oriented", kind: "warning" },
           ],
         },
-        //         {
-        //           name: "The Waterwaddlers",
-        //           special:
-        //             "Passive: Able to use fish invested water as natural bridges",
-        //           desc: `A faction consisting of otter like creatures that treat the water the same as land, as long as it’s shallow enough.
-        // focussed on movement and watermobility`,
-        //           color: "lightblue",
-        //           tags: [
-        //             { name: "All-rounded", kind: "danger" },
-        //             { name: "Mobility focussed", kind: "warning" },
-        //           ],
-        //         },
+                {
+                  name: "The Waterwaddlers",
+                  special:
+                    "Passive: Able to use fish invested water as natural bridges",
+                  desc: `A faction consisting of otter like creatures that treat the water the same as land, as long as it’s shallow enough.
+        focussed on movement and watermobility`,
+                  color: "lightblue",
+                  tags: [
+                    { name: "All-rounded", kind: "danger" },
+                    { name: "Mobility focussed", kind: "warning" },
+                  ],
+                },
       ],
       soldiers: [
         {
@@ -646,6 +706,24 @@ their eyes are only on the forests around them.`,
         tiles: 0,
       },
       levelUpCost: 5,
+      dominions: [
+        {
+          type: "Wood",
+          subject: "+1 wood",
+        },
+        {
+          type: "Food",
+          subject: "+1 food",
+        },
+        {
+          type: "Stone",
+          subject: "+1 stone",
+        },
+        {
+          type: "Gold",
+          subject: "+1 gold",
+        },
+      ],
       buildings: [
         {
           type: "Farm",
@@ -827,12 +905,11 @@ their eyes are only on the forests around them.`,
           age: 3,
         },
       ],
-      upgrades: [
-        // TODO connect this to function as an upgrade, replacing the natural increase from aging
+      ageUpgrades: [
         {
           type: "Urban planning",
           subject: "+1 yield all resources per city",
-          base: "",
+          base: "Aging",
           bought: false,
           upgradeLvl: 1,
           foodCost: 10,
@@ -845,7 +922,7 @@ their eyes are only on the forests around them.`,
         {
           type: "Writing and mathematics",
           subject: "+1 yield all resources per city",
-          base: "",
+          base: "Aging",
           bought: false,
           upgradeLvl: 2,
           foodCost: 30,
@@ -855,6 +932,9 @@ their eyes are only on the forests around them.`,
           needBuilder: false,
           age: 3,
         },
+      ],
+      upgrades: [
+        // TODO connect this to function as an upgrade, replacing the natural increase from aging
 
         //until here c:
 
@@ -1216,9 +1296,29 @@ their eyes are only on the forests around them.`,
           age: 3,
         },
       ],
-      units: [
-        { name: "Warrior", title: "Sjors", id: this.generateRandomId(8) },
+      dominionUpgrades: [
+        {
+          type: "Advanced dominions",
+          subject: "Dominions produce more",
+          base: "Dominion",
+          bought: false,
+          upgradeLvl: 1,
+          foodCost: 5,
+          woodCost: 5,
+          goldCost: 5,
+          stoneCost: 5,
+          needBuilder: false,
+          age: 1,
+        }
       ],
+      units: [
+        {
+          name: "SpDevil",
+          title: "Sjors",
+          id: this.generateRandomId(8),
+        },
+      ],
+      dominionsTaken: [],
       upgradeInv: [],
       cities: [],
       cityNames: [
@@ -1399,17 +1499,6 @@ their eyes are only on the forests around them.`,
           (resource) => (resource.amount -= requiredAmount)
         );
         this.age++;
-        if (requiredAmount === 30) {
-          this.resources.forEach((resource) => (resource.modifier += 2));
-          this.resources.forEach((resource) => {
-            resource.modifier += this.cities.length * 2;
-          });
-        } else {
-          this.resources.forEach((resource) => resource.modifier++);
-          this.resources.forEach((resource) => {
-            resource.modifier += this.cities.length;
-          });
-        }
       } else {
         this.showAlert();
       }
@@ -1668,6 +1757,26 @@ their eyes are only on the forests around them.`,
         this.$swal("You do not have a lumberyard");
       }
     },
+    takeDominion(type){
+      this.dominionsTaken.push({
+        name: type + 'Dominion',
+        title: type,
+        id: this.generateRandomId(8)
+      })
+
+      if(type === 'Food') {
+        this.resources[0].modifier++;
+      }
+            else if(type === 'Wood') {
+        this.resources[1].modifier++;
+      }
+            else if(type === 'Gold') {
+        this.resources[2].modifier++;
+      }
+            else if(type === 'Stone') {
+        this.resources[3].modifier++;
+      }
+    },
     buyBuilding(food, wood, gold, stone, type, needBuilder, producesUnit) {
       let currentFood = this.resources[0].amount;
       let currentWood = this.resources[1].amount;
@@ -1866,6 +1975,22 @@ their eyes are only on the forests around them.`,
       } else {
         this.$swal(`You do not have a fishery.`);
       }
+    },
+    removeDominion(domId){
+      const foundDom = this.dominionsTaken.filter((dom) => dom.id === domId);
+
+      if(foundDom[0].title === 'Food'){
+        this.resources[0].modifier--;
+      } else if(foundDom[0].title === 'Wood'){
+        this.resources[1].modifier--;
+      }
+        else if(foundDom[0].title === 'Gold'){
+        this.resources[2].modifier--;
+      }
+        else if(foundDom[0].title === 'Stone'){
+        this.resources[3].modifier--;
+      }
+      this.dominionsTaken = this.dominionsTaken.filter((dom) => dom.id != domId)
     },
     deleteUnit(unitId) {
       const foundUnit = this.units.filter((unit) => unit.id == unitId);
