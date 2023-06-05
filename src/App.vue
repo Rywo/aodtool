@@ -234,7 +234,7 @@
               @buy-building="buyUnit"
             />
           </div>
-          <h2 class="text-2xl text-white text-left mb-4">Soldiers</h2>
+          <h2 class="text-2xl text-white text-left mt-8 mb-4">Soldiers</h2>
           <div
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
           >
@@ -279,9 +279,9 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="Trading">
-          <div className="p-8 rounded-xl bg-slate-600/50 shadow-md flex">
-            <el-select v-model="tradeOffer">
-              <el-option
+          <div className="p-8 rounded-xl bg-slate-600/50 shadow-md flex gap-2">
+            <el-select v-model="tradeOffer" className="my-auto" >
+              <el-option 
                 v-for="tradeOption in tradeOptions"
                 :key="tradeOption.value"
                 :label="tradeOption.label"
@@ -289,7 +289,7 @@
               ></el-option>
             </el-select>
 
-            <el-select v-model="tradeReceive">
+            <el-select v-model="tradeReceive" className="my-auto">
               <el-option
                 v-for="tradeOption in tradeOptions"
                 :key="tradeOption.value"
