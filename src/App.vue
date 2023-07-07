@@ -7,7 +7,11 @@
       ID="factionselector"
       className=" lg:row-start-1 lg:col-span-4 flex mx-auto"
     >
-      <div v-if="playerSettings.faction.name == 0">
+      <div v-if="!playerSettings.mapGenerated">
+        <Grid @map-generated='setMapGenerated'/>
+      </div>
+    
+      <div v-if="playerSettings.faction.name == 0 && playerSettings.mapGenerated">
         <h1 class="text-white">Choose your faction</h1>
         <Factions
           v-for="faction in factions"
@@ -531,6 +535,7 @@ import BuildingInv from "./components/BuildingInv.vue";
 import DominionInv from "./components/DominionInv.vue";
 import Factions from "./components/Factions.vue";
 import City from "./components/City.vue";
+import Grid from "./components/Grid.vue";
 
 export default {
   components: {
@@ -544,6 +549,7 @@ export default {
     UpgradeInv,
     DominionInv,
     City,
+    Grid,
   },
   data() {
     return {
@@ -704,6 +710,7 @@ their eyes are only on the forests around them.`,
         faction: { name: "", color: "", special: "", tiles: 0 },
         population: this.totalPopulation,
         tiles: 0,
+        mapGenerated: false,
       },
       levelUpCost: 5,
       dominions: [
@@ -1482,6 +1489,9 @@ their eyes are only on the forests around them.`,
   methods: {
     increaseModifier(number) {
       this.resources[number].modifier++;
+    },
+    setMapGenerated(){
+      this.playerSettings.mapGenerated = true;
     },
     ageUp() {
       const ageRequirements = {
