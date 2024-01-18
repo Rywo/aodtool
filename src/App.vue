@@ -185,20 +185,6 @@
     >
       <el-tabs type="border-card">
         <el-tab-pane label="Buildings">
-          <h2 class="text-2xl text-white mb-4 text-center">
-            Dominions
-          </h2>
-          <div
-            class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-4 mb-10"
-          >
-            <Dominion
-              v-for="(dom, idx) in dominions"
-              :key="idx"
-              :type="dom.type"
-              :subject="dom.subject"
-              @buy-building="takeDominion"
-            />
-          </div>
           <h2 class="text-2xl text-white text-left mb-4">Buildings</h2>
           <div
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-4"
@@ -218,6 +204,92 @@
               @buy-building="buyBuilding"
             /></div
         ></el-tab-pane>
+
+                <el-tab-pane label="Dominions">
+          <h2 class="text-2xl text-white mb-4 text-center">
+            Dominions
+          </h2>
+          <div
+            class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-4 mb-10"
+          >
+            <Dominion
+              v-for="(dom, idx) in dominions"
+              :key="idx"
+              :type="dom.type"
+              :subject="dom.subject"
+              @buy-building="takeDominion"
+            />
+          </div>
+            <div class="grid lg:grid-cols-3 2xl:grid-cols-4 w-full gap-4">
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-red-500 hover:bg-red-700 h-full"
+                @click="increaseModifier(0)"
+              >
+                Steal First Wood Upgrade
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-red-500 hover:bg-red-700 h-full"
+                @click="increaseModifier(1)"
+              >
+                Steal First Food Upgrade
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-red-500 hover:bg-red-700 h-full"
+                @click="increaseModifier(2)"
+              >
+                Steal First Stone Upgrade
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-red-500 hover:bg-red-700 h-full"
+                @click="increaseModifier(3)"
+              >
+                Steal First Stone Upgrade
+              </button>
+            </div>
+                        <div class="grid lg:grid-cols-3 2xl:grid-cols-4 w-full gap-4 mt-5">
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-red-500 hover:bg-red-700 h-full"
+                @click="increaseModifier(0)"
+              >
+                Steal Second Wood Upgrade
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-red-500 hover:bg-red-700 h-full"
+                @click="increaseModifier(1)"
+              >
+                Steal Second Food Upgrade
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-red-500 hover:bg-red-700 h-full"
+                @click="increaseModifier(2)"
+              >
+                Steal Second Stone Upgrade
+              </button>
+
+              <button
+                v-if="playerSettings.faction.name"
+                class="px-2 py-3 shadow-lg bg-red-500 hover:bg-red-700 h-full"
+                @click="increaseModifier(3)"
+              >
+                Steal Second Stone Upgrade
+              </button>
+            </div>
+        </el-tab-pane>
+        
         <el-tab-pane label="Units">
           <div
             class="grid lg:grid-cols-3 2xl:grid-cols-4 w-max lg:w-full gap-4 mt-8"
@@ -326,22 +398,7 @@
               :wood-cost="upgrade.woodCost"
               :gold-cost="upgrade.goldCost"
               :stone-cost="upgrade.stoneCost"
-              :age="upgrade.age"
-              :need-builder="upgrade.needBuilder"
-              @buy-upgrade="buyUpgrade"
-            />
-
-             <Upgrades
-              v-for="upgrade in dominionUpgrades"
-              :key="upgrade.type"
-              :type="upgrade.type"
-              :base="upgrade.base"
-              :bought="upgrade.bought"
-              :subject="upgrade.subject"
-              :food-cost="upgrade.foodCost"
-              :wood-cost="upgrade.woodCost"
-              :gold-cost="upgrade.goldCost"
-              :stone-cost="upgrade.stoneCost"
+              :upgrade-lvl="upgrade.upgradeLvl"
               :age="upgrade.age"
               :need-builder="upgrade.needBuilder"
               @buy-upgrade="buyUpgrade"
@@ -361,6 +418,7 @@
               :wood-cost="upgrade.woodCost"
               :gold-cost="upgrade.goldCost"
               :stone-cost="upgrade.stoneCost"
+              :upgrade-lvl="upgrade.upgradeLvl"
               :age="upgrade.age"
               :need-builder="upgrade.needBuilder"
               @buy-upgrade="buyUpgrade"
@@ -1521,7 +1579,14 @@ their eyes are only on the forests around them.`,
     },
     buyUpgrade(food, base, bougth, wood, gold, stone, type) {
       const currentUpgrade = this.upgrades.find((u) => u.type === type);
-
+      let currentFood = this.resources[0].amount;
+      let currentWood = this.resources[1].amount;
+      let currentGold = this.resources[2].amount;
+      let currentStone = this.resources[3].amount;
+      if(currentFood >= currentUpgrade.foodCost &&
+      currentGold >= currentUpgrade.goldCost &&
+      currentWood >= currentUpgrade.woodCost && currentStone >=
+      currentUpgrade.stoneCost){
       if (currentUpgrade.base === "Farm") {
         if (currentUpgrade.age === 3) {
           this.units.forEach((unit) => {
@@ -1623,6 +1688,9 @@ their eyes are only on the forests around them.`,
           name: currentUpgrade.type,
           title: currentUpgrade.type,
         });
+      }
+      } else {
+        this.showAlert();
       }
     },
     buyUnit(food, wood, gold, stone, type) {

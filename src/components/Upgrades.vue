@@ -85,6 +85,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    upgradeLvl: {
+      type: Number,
+      required: true,
+    }
   },
   methods: {
     buyUpgrade() {
@@ -97,7 +101,8 @@ export default {
         this.goldCost,
         this.stoneCost,
         this.type,
-        this.needBuilder
+        this.needBuilder,
+        this.upgradeLvl
       );
     },
   },
