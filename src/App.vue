@@ -1577,152 +1577,66 @@ their eyes are only on the forests around them.`,
       }
       this.turn += 1;
     },
-    buyUpgrade(food, base, bougth, wood, gold, stone, type) {
-      const currentUpgrade = this.upgrades.find((u) => u.type === type);
-      let currentFood = this.resources[0].amount;
-      let currentWood = this.resources[1].amount;
-      let currentGold = this.resources[2].amount;
-      let currentStone = this.resources[3].amount;
-      if(currentFood >= currentUpgrade.foodCost &&
-      currentGold >= currentUpgrade.goldCost &&
-      currentWood >= currentUpgrade.woodCost && currentStone >=
-      currentUpgrade.stoneCost){
-      if (currentUpgrade.base === "Farm") {
-        if (currentUpgrade.age === 3) {
-          this.units.forEach((unit) => {
-            if (unit.title === "Farm") {
-              this.resources[0].modifier += 2;
-            }
-          });
-        } else {
-          this.units.forEach((unit) => {
-            if (unit.title === "Farm") {
-              this.resources[0].modifier++;
-            }
-          });
-        }
-        currentUpgrade.bought = true;
-        this.upgradeInv.push({
-          name: currentUpgrade.type,
-          title: currentUpgrade.type,
-        });
-      } else if (currentUpgrade.base === "Fishery") {
-        if (currentUpgrade.age === 3) {
-          this.units.forEach((unit) => {
-            if (unit.title === "Fishery") {
-              this.resources[0].modifier += 2;
-            }
-          });
-        } else {
-          this.units.forEach((unit) => {
-            if (unit.title === "Fishery") {
-              this.resources[0].modifier++;
-            }
+    buyUpgrade(type) {
+      const currentUpgrade = this.upgrades.find((u) => u.base === type);
+
+      if(this.resources[0].amount >= currentUpgrade.foodCost &&
+      this.resources[2].amount >= currentUpgrade.goldCost &&
+      this.resources[1].amount >= currentUpgrade.woodCost && 
+      this.resources[3].amount >= currentUpgrade.stoneCost){
+
+        const baseTypeToResourceModifier = {
+          "Farm": 0,
+          "Fishery": 0,
+          "Lumberyard": 1,
+          "Market": 2,
+          "Mine": 3
+        };
+
+        if (baseTypeToResourceModifier.hasOwnProperty(currentUpgrade.base)) {
+          const resourceModifier = baseTypeToResourceModifier[currentUpgrade.base];
+          const unitsOfType = this.units.filter((unit) => unit.title === currentUpgrade.base);
+          unitsOfType.forEach(() => {
+            this.resources[resourceModifier].modifier += currentUpgrade.age === 3 ? 2 : 1;
           });
         }
         currentUpgrade.bought = true;
         this.upgradeInv.push({
           name: currentUpgrade.type,
           title: currentUpgrade.type,
+          base: currentUpgrade.base,
+          upgradeLvl: currentUpgrade.upgradeLvl,
         });
-      } else if (currentUpgrade.base === "Lumberyard") {
-        if (currentUpgrade.age === 3) {
-          this.units.forEach((unit) => {
-            if (unit.title === "Lumberyard") {
-              this.resources[1].modifier += 2;
-            }
-          });
-        } else {
-          this.units.forEach((unit) => {
-            if (unit.title === "Lumberyard") {
-              this.resources[1].modifier++;
-            }
-          });
-        }
-        currentUpgrade.bought = true;
-        this.upgradeInv.push({
-          name: currentUpgrade.type,
-          title: currentUpgrade.type,
-        });
-      } else if (currentUpgrade.base === "Market") {
-        if (currentUpgrade.age === 3) {
-          this.units.forEach((unit) => {
-            if (unit.title === "Market") {
-              this.resources[2].modifier += 2;
-            }
-          });
-        } else {
-          this.units.forEach((unit) => {
-            if (unit.title === "Market") {
-              this.resources[2].modifier++;
-            }
-          });
-        }
-        currentUpgrade.bought = true;
-        this.upgradeInv.push({
-          name: currentUpgrade.type,
-          title: currentUpgrade.type,
-        });
-      } else if (currentUpgrade.base === "Mine") {
-        if (currentUpgrade.age === 3) {
-          this.units.forEach((unit) => {
-            if (unit.title === "Mine") {
-              this.resources[3].modifier += 2;
-            }
-          });
-        } else {
-          this.units.forEach((unit) => {
-            if (unit.title === "Mine") {
-              this.resources[3].modifier++;
-            }
-          });
-        }
-        currentUpgrade.bought = true;
-        this.upgradeInv.push({
-          name: currentUpgrade.type,
-          title: currentUpgrade.type,
-        });
-      } else {
-        currentUpgrade.bought = true;
-        this.upgradeInv.push({
-          name: currentUpgrade.type,
-          title: currentUpgrade.type,
-        });
-      }
       } else {
         this.showAlert();
       }
     },
-    buyUnit(food, wood, gold, stone, type) {
-      let currentFood = this.resources[0].amount;
-      let currentWood = this.resources[1].amount;
-      let currentGold = this.resources[2].amount;
-      let currentStone = this.resources[3].amount;
-      const randomUnitName =
-        this.unitNames[Math.floor(Math.random() * this.cityNames.length)];
-      if (this.totalPopulation > this.unitsOwned) {
-        if (
-          currentFood >= food &&
-          currentWood >= wood &&
-          currentGold >= gold &&
-          currentStone >= stone
-        ) {
-          this.units.push({
-            name: type,
-            title: randomUnitName,
-            id: this.generateRandomId(8),
-          });
-          this.resources[0].amount = currentFood - food;
-          this.resources[1].amount -= wood;
-          this.resources[2].amount -= gold;
-          this.resources[3].amount -= stone;
-          this.unitsOwned++;
-        } else {
-          this.showAlert();
-        }
-      } else {
+    buyUnit(foodCost, woodCost, goldCost, stoneCost, unitType) {
+      if (this.totalPopulation <= this.unitsOwned) {
         this.showUnitAlert();
+        return;
       }
+      const resourceIndexMap = { food: 0, wood: 1, gold: 2, stone: 3 };
+      const unitCosts = { food: foodCost, wood: woodCost, gold: goldCost, stone: stoneCost };
+      for (const resource in unitCosts) {
+        const resourceIndex = resourceIndexMap[resource];
+        if (this.resources[resourceIndex].amount < unitCosts[resource]) {
+          console.log(`Not enough ${resource}. You have ${this.resources[resourceIndex].amount}, but need ${unitCosts[resource]}`);
+          this.showAlert();
+          return;
+        }
+      }
+      for (const resource in unitCosts) {
+        const resourceIndex = resourceIndexMap[resource];
+        this.resources[resourceIndex].amount -= unitCosts[resource];
+      }
+      const randomUnitName = this.unitNames[Math.floor(Math.random() * this.unitNames.length)];
+      this.units.push({
+        name: unitType,
+        title: randomUnitName,
+        id: this.generateRandomId(8),
+      });
+      this.unitsOwned++;
     },
     generateRandomId(length) {
       const characters =
@@ -1792,41 +1706,32 @@ their eyes are only on the forests around them.`,
       }
     },
     foundCity() {
-      const randomCityName =
-        this.cityNames[Math.floor(Math.random() * this.cityNames.length)];
+      const settlerIndex = this.units.findIndex(unit => unit.name === "Settler");
 
-      const settlerIndex = this.units.findIndex(
-        (unit) => unit.name === "Settler"
-      );
-
-      if (settlerIndex !== -1) {
-        this.resources[0].modifier++;
-        this.resources[1].modifier++;
-        this.resources[2].modifier++;
-        this.resources[3].modifier++;
-        if (this.age === 2) {
-          this.resources[0].modifier++;
-          this.resources[1].modifier++;
-          this.resources[2].modifier++;
-          this.resources[3].modifier++;
-        } else if (this.age === 3) {
-          this.resources[0].modifier += 2;
-          this.resources[1].modifier += 2;
-          this.resources[2].modifier += 2;
-          this.resources[3].modifier += 2;
-        }
-        this.playerSettings.population++;
-        this.units.splice(settlerIndex, 1);
-        this.cities.push({
-          name: randomCityName,
-          id: this.generateRandomId(8),
-          population: 1,
-          levelUpCost: 5,
-        });
-        this.unitsOwned--;
-      } else {
+      if (settlerIndex === -1) {
         this.$swal("You do not own a settler");
+        return;
       }
+
+      const randomCityName = this.cityNames[Math.floor(Math.random() * this.cityNames.length)];
+      const newCity = {
+        name: randomCityName,
+        id: this.generateRandomId(8),
+        population: 1,
+        levelUpCost: 5,
+      };
+
+      this.cities.push(newCity);
+      this.units.splice(settlerIndex, 1);
+      this.unitsOwned--;
+
+      this.playerSettings.population++;
+      this.increaseResourceModifiers();
+    },
+
+    increaseResourceModifiers() {
+      const baseIncrement = this.age === 1 ? 1 : this.age;
+      this.resources.forEach(resource => resource.modifier += baseIncrement);
     },
     getForest() {
       if (this.units.includes("Lumberyard")) {
@@ -1855,122 +1760,85 @@ their eyes are only on the forests around them.`,
         this.resources[3].modifier++;
       }
     },
-    buyBuilding(food, wood, gold, stone, type, needBuilder, producesUnit) {
-      let currentFood = this.resources[0].amount;
-      let currentWood = this.resources[1].amount;
-      let currentGold = this.resources[2].amount;
-      let currentStone = this.resources[3].amount;
-      if (
-        currentFood >= food &&
-        currentWood >= wood &&
-        currentGold >= gold &&
-        currentStone >= stone
-      ) {
-        if (type == "Farm") {
-          this.resources[0].modifier++;
-          if (this.playerSettings.faction.name == "The Devils") {
-            this.resources[0].modifier++;
-          }
-        } else if (type == "Fishery") {
-          this.resources[0].modifier++;
-        } else if (type == "Lumberyard") {
-          this.resources[1].modifier++;
-        } else if (type == "Market") {
-          this.resources[2].modifier++;
-          if (this.playerSettings.faction.name == "The Caws") {
-            this.resources[2].modifier++;
-          }
-        } else if (type == "Mine") {
-          this.resources[3].modifier++;
+    buyBuilding(foodCost, woodCost, goldCost, stoneCost, buildingType, needBuilder, producesUnit) {
+      const resourceIndexMap = { food: 0, wood: 1, gold: 2, stone: 3 };
+
+      const buildingToResourceMap = {
+        Farm: { resource: 'food', faction: 'The Devils' },
+        Fishery: { resource: 'food' },
+        Lumberyard: { resource: 'wood' },
+        Market: { resource: 'gold', faction: 'The Caws' },
+        Mine: { resource: 'stone' },
+      };
+
+      const costs = { food: foodCost, wood: woodCost, gold: goldCost, stone: stoneCost };
+      for (const resource in costs) {
+        const resourceIndex = resourceIndexMap[resource];
+        if (this.resources[resourceIndex].amount < costs[resource]) {
+          this.showAlert();
+          return;
         }
-        this.units.push({
-          name: type,
-          title: type,
-          id: this.generateRandomId(8),
-          producesUnit: producesUnit,
-        });
-        this.resources[0].amount = currentFood - food;
-        this.resources[1].amount -= wood;
-        this.resources[2].amount -= gold;
-        this.resources[3].amount -= stone;
-      } else {
-        this.showAlert();
       }
+      for (const resource in costs) {
+        const resourceIndex = resourceIndexMap[resource];
+        this.resources[resourceIndex].amount -= costs[resource];
+      }
+      const buildingUpgrade = this.upgradeInv.find(upgrade => upgrade.base === buildingType);
+      let modifierIncrement = buildingUpgrade ? buildingUpgrade.upgradeLvl + 1 : 1;
+
+      const buildingResourceInfo = buildingToResourceMap[buildingType];
+      if (buildingResourceInfo) {
+        const resourceIndex = resourceIndexMap[buildingResourceInfo.resource];
+        this.resources[resourceIndex].modifier += modifierIncrement;
+        if (this.playerSettings.faction.name === buildingResourceInfo.faction) {
+          this.resources[resourceIndex].modifier++;
+        }
+      }
+      this.units.push({
+        name: buildingType,
+        title: buildingType,
+        id: this.generateRandomId(8),
+        producesUnit: producesUnit,
+      });
     },
     buySpecial(name) {
-      const randomUnitName =
-        this.unitNames[Math.floor(Math.random() * this.cityNames.length)];
-      if (this.unitsOwned < this.totalPopulation) {
-        if (
-          name == "The Caws" &&
-          this.resources[0].amount >= 1 &&
-          this.resources[1].amount >= 2 &&
-          this.resources[2].amount >= 5 &&
-          this.resources[3].amount >= 0
-        ) {
-          this.resources[0].amount -= 1;
-          this.resources[1].amount -= 2;
-          this.resources[2].amount -= 5;
-          this.resources[3].amount -= 0;
-          this.units.push({
-            name: "SpCaw",
-            title: randomUnitName,
-            id: this.generateRandomId(8),
-          });
-        } else if (
-          name == "The Devils" &&
-          this.resources[0].amount >= 5 &&
-          this.resources[1].amount >= 2 &&
-          this.resources[2].amount >= 0 &&
-          this.resources[3].amount >= 1
-        ) {
-          this.resources[0].amount -= 5;
-          this.resources[1].amount -= 2;
-          this.resources[2].amount -= 0;
-          this.resources[3].amount -= 1;
-          this.units.push({
-            name: "SpDevil",
-            title: randomUnitName,
-            id: this.generateRandomId(8),
-          });
-        } else if (
-          name == "The Whoolies" &&
-          this.resources[0].amount >= 3 &&
-          this.resources[1].amount >= 2 &&
-          this.resources[2].amount >= 3 &&
-          this.resources[3].amount >= 0
-        ) {
-          this.resources[0].amount -= 3;
-          this.resources[1].amount -= 2;
-          this.resources[2].amount -= 3;
-          this.resources[3].amount -= 0;
-          this.units.push({
-            name: "SpWhool",
-            title: randomUnitName,
-            id: this.generateRandomId(8),
-          });
-        } else if (
-          name == "The Crunchers" &&
-          this.resources[0].amount >= 2 &&
-          this.resources[1].amount >= 4 &&
-          this.resources[2].amount >= 0 &&
-          this.resources[3].amount >= 2
-        ) {
-          this.resources[0].amount -= 2;
-          this.resources[1].amount -= 4;
-          this.resources[2].amount -= 0;
-          this.resources[3].amount -= 2;
-          this.units.push({
-            name: "SpCrunch",
-            title: randomUnitName,
-            id: this.generateRandomId(8),
-          });
-        } else {
-          this.showAlert();
-        }
-      } else {
+      const randomUnitName = this.unitNames[Math.floor(Math.random() * this.unitNames.length)];
+
+      if (this.unitsOwned >= this.totalPopulation) {
         this.showUnitAlert();
+        return;
       }
+
+      const specialUnits = {
+        "The Caws": { name: "SpCaw", costs: [1, 2, 5, 0] },
+        "The Devils": { name: "SpDevil", costs: [5, 2, 0, 1] },
+        "The Whoolies": { name: "SpWhool", costs: [3, 2, 3, 0] },
+        "The Crunchers": { name: "SpCrunch", costs: [2, 4, 0, 2] }
+      };
+
+      const specialUnit = specialUnits[name];
+
+      if (!specialUnit) {
+        this.showAlert();
+        return;
+      }
+
+      for (let i = 0; i < this.resources.length; i++) {
+        if (this.resources[i].amount < specialUnit.costs[i]) {
+          this.showAlert();
+          return;
+        }
+      }
+
+      for (let i = 0; i < this.resources.length; i++) {
+        this.resources[i].amount -= specialUnit.costs[i];
+      }
+
+      this.units.push({
+        name: specialUnit.name,
+        title: randomUnitName,
+        id: this.generateRandomId(8),
+      });
     },
     destroyCity(cityId) {
       this.cities = this.cities.filter((city) => city.id != cityId);
