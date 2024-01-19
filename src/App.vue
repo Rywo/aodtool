@@ -1939,28 +1939,35 @@ their eyes are only on the forests around them.`,
       this.dominionsTaken = this.dominionsTaken.filter((dom) => dom.id != domId)
     },
     deleteUnit(unitId) {
-      const foundUnit = this.units.filter((unit) => unit.id == unitId);
-      const isBuilding = this.units.some((unit) => {
-        return this.buildings.some((building) => {
-          return unit.name === building.type;
-        });
-      });
+      const foundUnit = this.units.find((unit) => unit.id == unitId);
+      if (!foundUnit) return;
 
-      if (foundUnit[0].name == "Farm") {
-        this.resources[0].modifier--;
-        if (this.playerSettings.faction.name == "The Devils") {
-          this.resources[0].modifier--;
+      const unitUpgrade = this.upgradeInv.find(upgrade => upgrade.base === foundUnit.name);
+
+      const buildingToResourceMap = {
+        Farm: 0,
+        Lumberyard: 1,
+        Market: 2,
+        Fishery: 0,
+        Mine: 3
+      };
+
+      const factionBonusMap = {
+        'The Devils' : 'Farm',
+        'The Caws' : 'Market'
+      };
+
+      const resourceIndex = buildingToResourceMap[foundUnit.name];
+      if (resourceIndex !== undefined) {
+        this.resources[resourceIndex].modifier--;
+        if (unitUpgrade) {
+          this.resources[resourceIndex].modifier -= unitUpgrade.upgradeLvl;
         }
-      } else if (foundUnit[0].name == "Lumberyard") {
-        this.resources[1].modifier--;
-      } else if (foundUnit[0].name == "Market") {
-        this.resources[2].modifier--;
-        if (this.playerSettings.faction.name == "The Caws") {
-          this.resources[2].modifier--;
+        if (this.playerSettings.faction.name === factionBonusMap[foundUnit.name]) {
+          this.resources[resourceIndex].modifier--;
         }
-      } else if (foundUnit[0].name == "Mine") {
-        this.resources[3].modifier--;
       }
+
       this.units = this.units.filter((unit) => unit.id != unitId);
       this.unitsOwned--;
     },
