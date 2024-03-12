@@ -865,6 +865,26 @@ export default {
           unitsOfType.forEach(() => {
             this.resources[resourceModifier].modifier += currentUpgrade.age === 3 ? 2 : 1;
           });
+
+          // Apply modifier to each dominion the player has taken
+          this.dominionsTaken.forEach((dominion) => {
+            if (dominion.type === currentUpgrade.base) {
+              // Increase the specific resource modifier based on the upgrade
+              if (resourceModifier === 0) {
+                dominion.foodMod += 1;
+                this.resources[0].modifier += 1;
+              } else if (resourceModifier === 1) {
+                dominion.woodMod += 1;
+                this.resources[1].modifier += 1;
+              } else if (resourceModifier === 2) {
+                dominion.goldMod += 1;
+                this.resources[2].modifier += 1;
+              } else if (resourceModifier === 3) {
+                dominion.stoneMod += 1;
+                this.resources[3].modifier += 1;
+              }
+            }
+          });
         }
         currentUpgrade.bought = true;
         this.upgradeInv.push({
@@ -1007,28 +1027,37 @@ export default {
       }
     },
     takeDominion(type){
-      this.dominionsTaken.push({
-        name: type + 'Dominion',
-        title: type,
-        id: this.generateRandomId(8)
-      })
+      let foodMod = 0;
+      let woodMod = 0;
+      let goldMod = 0;
+      let stoneMod = 0;
 
       if(type === 'Food') {
         this.resources[0].modifier++;
-      }
-            else if(type === 'Wood') {
+        foodMod = this.resources[0].modifier;
+      } else if(type === 'Wood') {
         this.resources[1].modifier++;
-      }
-            else if(type === 'Gold') {
+        woodMod = this.resources[1].modifier;
+      } else if(type === 'Gold') {
         this.resources[2].modifier++;
-      }
-            else if(type === 'Stone') {
+        goldMod = this.resources[2].modifier;
+      } else if(type === 'Stone') {
         this.resources[3].modifier++;
+        stoneMod = this.resources[3].modifier;
       }
+
+      this.dominionsTaken.push({
+        name: type + 'Dominion',
+        type: type,
+        foodMod: foodMod,
+        woodMod: woodMod,
+        goldMod: goldMod,
+        stoneMod: stoneMod,
+        id: this.generateRandomId(8)
+      });
     },
     buyBuilding(foodCost, woodCost, goldCost, stoneCost, buildingType, needBuilder, producesUnit) {
       const resourceIndexMap = { food: 0, wood: 1, gold: 2, stone: 3 };
-
       const buildingToResourceMap = {
         Farm: { resource: 'food', faction: 'The Devils' },
         Fishery: { resource: 'food' },
@@ -1036,8 +1065,13 @@ export default {
         Market: { resource: 'gold', faction: 'The Caws' },
         Mine: { resource: 'stone' },
       };
-
+      const factionBonusMap = {
+        'The Literarians': 'Fishery',
+        'The Slithers': 'Mine'
+      };
       const costs = { food: foodCost, wood: woodCost, gold: goldCost, stone: stoneCost };
+
+      // Check if the player has enough resources to buy the building
       for (const resource in costs) {
         const resourceIndex = resourceIndexMap[resource];
         if (this.resources[resourceIndex].amount < costs[resource]) {
@@ -1045,13 +1079,18 @@ export default {
           return;
         }
       }
+
+      // Deduct the cost of the building from the player's resources
       for (const resource in costs) {
         const resourceIndex = resourceIndexMap[resource];
         this.resources[resourceIndex].amount -= costs[resource];
       }
+
+      // Check if there's an upgrade for the building
       const buildingUpgrade = this.upgradeInv.find(upgrade => upgrade.base === buildingType);
       let modifierIncrement = buildingUpgrade ? buildingUpgrade.upgradeLvl + 1 : 1;
 
+      // Increase the resource modifier based on the building type
       const buildingResourceInfo = buildingToResourceMap[buildingType];
       if (buildingResourceInfo) {
         const resourceIndex = resourceIndexMap[buildingResourceInfo.resource];
@@ -1060,6 +1099,14 @@ export default {
           this.resources[resourceIndex].modifier++;
         }
       }
+
+      // Check for faction-specific bonuses
+      if (this.playerSettings.faction.name in factionBonusMap && buildingType === factionBonusMap[this.playerSettings.faction.name]) {
+        const resourceIndex = resourceIndexMap[buildingToResourceMap[buildingType].resource];
+        this.resources[resourceIndex].modifier++;
+      }
+
+      // Add the building to the player's units
       this.units.push({
         name: buildingType,
         title: buildingType,
